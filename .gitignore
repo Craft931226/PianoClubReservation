@@ -1,0 +1,16 @@
+ECHO ¤w±Ò°Ê¡C
+# Python cache files
+*.pyc
+__pycache__/
+
+# Django specific
+db.sqlite3
+*.log
+
+# Virtual environment
+venv/
+
+# IDE specific
+.vscode/
+.idea/
+*.swp
