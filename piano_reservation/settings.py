@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-_x*oju!kv=x*gjbduo)$9dsl%p66xscvq)vp#xz3kr!w$ez2hk'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['piano-reservation.onrender.com', '127.0.0.1']
 
