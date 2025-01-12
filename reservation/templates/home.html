@@ -8,5 +8,10 @@
 <body>
     <h1>Welcome to the Reservation System</h1>
     <p>This is a simple Django application deployed on Render!</p>
+    
+    <!-- 新增按鈕 -->
+    <form action="{% url 'second_page' %}" method="get">
+        <button type="submit">Go to Second Page</button>
+    </form>
 </body>
 </html>
