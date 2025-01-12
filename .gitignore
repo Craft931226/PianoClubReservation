@@ -1,4 +1,4 @@
-ECHO �w�ҰʡC
+ECHO �w�ҰʡC
 # Python cache files
 *.pyc
 __pycache__/
@@ -14,3 +14,6 @@ venv/
 .vscode/
 .idea/
 *.swp
+
+# 排除 collectstatic 生成的目錄
+/staticfiles/

@@ -116,12 +116,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = '/static/'  # 靜態文件的 URL 前綴
+
 STATICFILES_DIRS = [
-    BASE_DIR / "static",  # 將專案根目錄下的 static 資料夾包含為靜態文件目錄
+    BASE_DIR / "static",  # 指向專案中靜態文件的來源目錄
 ]
-STATIC_ROOT = BASE_DIR / "staticfiles"  # 用於 collectstatic 命令
+
+STATIC_ROOT = BASE_DIR / "staticfiles"  # collectstatic 命令的目標目錄
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
