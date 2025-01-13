@@ -118,8 +118,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'  # 靜態文件的 URL 前綴
 
+# Static file route
 STATICFILES_DIRS = [
-    BASE_DIR / "static",  # 指向專案中靜態文件的來源目錄
+    os.path.join(BASE_DIR, 'static'),
 ]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"  # collectstatic 命令的目標目錄
