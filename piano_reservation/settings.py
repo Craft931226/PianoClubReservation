@@ -120,7 +120,7 @@ STATIC_URL = '/static/'  # 靜態文件的 URL 前綴
 
 # Static file route
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'static')
 ]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"  # collectstatic 命令的目標目錄
