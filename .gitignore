@@ -1,0 +1,19 @@
+ECHO �w�ҰʡC
+# Python cache files
+*.pyc
+__pycache__/
+
+# Django specific
+db.sqlite3
+*.log
+
+# Virtual environment
+venv/
+
+# IDE specific
+.vscode/
+.idea/
+*.swp
+
+# 排除 collectstatic 生成的目錄
+/staticfiles/

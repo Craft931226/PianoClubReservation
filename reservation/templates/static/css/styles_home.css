@@ -1,0 +1,151 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    line-height: 1.6;
+    color: #333;
+  }
+  header nav ul.drop-down-menu {
+    position: relative; /* 確保嵌套選單相對定位 */
+  }
+  
+  header nav ul.drop-down-menu ul {
+    display: none; /* 預設隱藏 */
+    position: absolute;
+    top: 100%; /* 位於父級項目下方 */
+    left: auto;
+    z-index: 99;
+    background-color: #333;
+    border: 1px solid #ccc;
+    min-width: 180px;
+  }
+  
+  header nav ul.drop-down-menu li:hover > ul {
+    display: block; /* 滑鼠懸停時顯示 */
+  }
+  
+  header nav ul.drop-down-menu ul li {
+    left: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  header nav ul.drop-down-menu ul li:last-child {
+    border-bottom: none;
+  }
+  
+  header {
+    background: #333;
+    color: #fff;
+    padding: 10px 20px;
+  }
+  
+  header nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+  }
+  
+  header nav ul li {
+    margin-right: 20px;
+  }
+  
+  header nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  
+  header nav ul li a:hover {
+    color: #ff6347;
+  }
+  header nav ul li option:hover {
+    color: #ff6347;
+  }
+  
+  #hero {
+    background: url("hero-bg.jpg") no-repeat center center/cover;
+    color: #fff;
+    text-align: center;
+    padding: 100px 20px;
+  }
+  
+  #hero h1 {
+    color: #333;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+  }
+  
+  #hero p {
+    color: #333;
+    font-size: 1.2em;
+    margin-bottom: 30px;
+  }
+  
+  #hero .btn {
+    display: inline-block;
+    background: #ff6347;
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background 0.3s;
+  }
+  
+  #hero .btn:hover {
+    background: #e55342;
+  }
+  
+  section {
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  h2 {
+    margin-bottom: 20px;
+    font-size: 2em;
+    color: #333;
+  }
+  
+  .service {
+    background: #f4f4f4;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  form {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  form label {
+    font-weight: bold;
+  }
+  
+  form button {
+    padding: 7px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: #333;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  form button:hover {
+    background: #ff6347;
+  }
+  
+  footer {
+    background: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px 20px;
+    margin-top: 40px;
+  }
+  
