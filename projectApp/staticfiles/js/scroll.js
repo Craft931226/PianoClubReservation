@@ -36,27 +36,14 @@ document.getElementById('languages').addEventListener('change', function () {
     });
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-    const sections = document.querySelectorAll('.full-screen-section');
-    let currentSectionIndex = 0;
+function openDialog() {
+    document.getElementById("myDialog").showModal();
+}
 
-    function scrollToSection(index) {
-        sections[index].scrollIntoView({ behavior: 'smooth' });
-    }
+function closeDialog() {
+    document.getElementById("myDialog").close();
+}
 
-    window.addEventListener('wheel', function(event) {
-        if (event.deltaY > 0) {
-            // Scroll down
-            if (currentSectionIndex < sections.length - 2) {
-                currentSectionIndex++;
-                scrollToSection(currentSectionIndex);
-            }
-        } else {
-            // Scroll up
-            if (currentSectionIndex > 0) {
-                currentSectionIndex--;
-                scrollToSection(currentSectionIndex);
-            }
-        }
-    });
-});
+if (typeof HTMLDialogElement === 'undefined') {
+    alert('您的瀏覽器不支援 <dialog> 元素！');
+}

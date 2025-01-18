@@ -14,7 +14,7 @@ class Command(BaseCommand):
 
             for _, row in data.iterrows():
                 # 將每行資料插入資料庫
-                User.objects.create(name=row['姓名'], student_id=row['學號'])
+                User.objects.create(name=row['姓名'], student_id=row['學號'], weeklyTimeLimitHours=row['每週時數限制'])
 
             self.stdout.write(self.style.SUCCESS("資料匯入完成！"))
 

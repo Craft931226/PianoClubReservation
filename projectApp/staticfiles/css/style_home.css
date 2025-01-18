@@ -71,7 +71,7 @@ color: #ff6347;
 }
 
 #hero {
-background: url("hero-bg.jpg") no-repeat center center/cover;
+
 color: #fff;
 text-align: center;
 padding: 100px 20px;
@@ -157,3 +157,65 @@ text-align: center;
 padding: 10px 20px;
 margin-top: 40px;
 }
+.button-container {
+  display: flex; /* 使用 Flexbox 佈局 */
+  justify-content: space-between; /* 按鈕之間均勻分布 */
+  width: 100%; /* 確保容器占滿螢幕寬度 */
+  padding: 0 10px; /* 容器左右內邊距 */
+  box-sizing: border-box; /* 確保內邊距不影響整體寬度 */
+}
+.reservation-btn {
+  flex: 1; /* 按鈕等分寬度 */
+  margin: 0 5px; /* 按鈕之間的間距 */
+  text-align: center; /* 文字置中 */
+  background: #2f9084;
+  color: #fff;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background 0.3s;
+
+}
+
+.reservation-btn:hover {
+background: #e55342;
+}
+/* 對話框的樣式 */
+dialog {
+  position: fixed; /* 固定位置，確保不隨滾動移動 */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 精確居中 */
+  border: none; /* 移除預設邊框 */
+  border-radius: 10px; /* 圓角 */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* 加入陰影 */
+  padding: 20px;
+  width: 400px; /* 固定寬度 */
+  background: #fff; /* 背景色 */
+  z-index: 1000; /* 確保在最上層 */
+  text-align: center;
+}
+
+/* 關閉按鈕的樣式 */
+dialog button {
+  margin-top: 20px; /* 與內容保持距離 */
+  padding: 10px 20px;
+  background: #ff6347;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+dialog button:hover {
+  background: #e55342;
+}
+
+/* 彈出背景樣式 */
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5); /* 半透明背景 */
+  z-index: 1000; /* 確保置於最上層 */
+}
+
+  
