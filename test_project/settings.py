@@ -93,7 +93,7 @@ print("Production mode")
 DATABASES = {
     'default': dj_database_url.config(
         # Replace this value with your local database's connection string.
-        default='postgresql://reservation_db_9p1s_user:cYMBOiToq5ZTzGWu1ZbD9SgtCtK7KYUt@dpg-cu5l73ogph6c73btrnd0-a/reservation_db_9p1s',
+        default='postgresql://reservation_db_9p1s_user:cYMBOiToq5ZTzGWu1ZbD9SgtCtK7KYUt@dpg-cu5l73ogph6c73btrnd0-a.oregon-postgres.render.com/reservation_db_9p1s',
         conn_max_age=600
     )
 }
