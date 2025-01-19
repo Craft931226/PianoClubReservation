@@ -79,24 +79,15 @@ WSGI_APPLICATION = 'test_project.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 # Replace the SQLite DATABASES configuration with PostgreSQL:
-if  DEBUG:
-    print("DEBUG mode")
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": "db.sqlite3",
-        }
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": "db.sqlite3",
     }
+}
 # Replace the SQLite DATABASES configuration with PostgreSQL:
-else:
-    print("Production mode")
-    DATABASES = {
-        'default': dj_database_url.config(
-            # Replace this value with your local database's connection string.
-            default='postgresql://reservation_db_9p1s_user:cYMBOiToq5ZTzGWu1ZbD9SgtCtK7KYUt@dpg-cu5l73ogph6c73btrnd0-a/reservation_db_9p1s',
-            conn_max_age=600
-        )
-    }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
