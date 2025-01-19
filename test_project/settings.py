@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-sw!m#8xbb$1+l(++!c+-w8$5tanul^@$p*et-9pjw8=6=bpbu_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 
@@ -79,12 +79,24 @@ WSGI_APPLICATION = 'test_project.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 # Replace the SQLite DATABASES configuration with PostgreSQL:
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "db.sqlite3",
+if  DEBUG:
+    print("DEBUG mode")
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": "db.sqlite3",
+        }
     }
-}
+# Replace the SQLite DATABASES configuration with PostgreSQL:
+else:
+    print("Production mode")
+    DATABASES = {
+        'default': dj_database_url.config(
+            # Replace this value with your local database's connection string.
+            default='postgresql://reservation_db_9p1s_user:cYMBOiToq5ZTzGWu1ZbD9SgtCtK7KYUt@dpg-cu5l73ogph6c73btrnd0-a/reservation_db_9p1s',
+            conn_max_age=600
+        )
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
