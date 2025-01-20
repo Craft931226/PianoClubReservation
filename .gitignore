@@ -18,5 +18,4 @@ venv/
 # 排除 collectstatic 生成的目錄
 /staticfiles/
 
-# Google API credentials
-credentials.json
+

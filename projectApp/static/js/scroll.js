@@ -1,7 +1,8 @@
 const translations = {
-    "預約系統": { en: "Reservation", zh: "預約系統" },
-    "注意事項": { en: "Notations", zh: "注意事項" },
+    "預約系統": { en: "Reserve", zh: "預約系統" },
+    "注意事項": { en: "Note", zh: "注意事項" },
     "常見問題": { en: "F&Q", zh: "常見問題" },
+    "歡迎": { en: "Welcome，", zh: "歡迎，" },
     "歡迎來到琴房預約系統": { en: "Welcome to the Piano Room Reservation System", zh: "歡迎來到琴房預約系統" },
     "若您是第一次使用，請閱讀以下注意事項": { en: "If this is your first time, please read the following precautions", zh: "若您是第一次使用，請閱讀以下注意事項" },
     "中央鋼琴社預約系統": { en: "National Central University Piano Society Reservation System", zh: "中央鋼琴社預約系統" },
@@ -43,4 +44,64 @@ function openDialog() {
 function closeDialog() {
     document.getElementById("myDialog").close();
 }
+
+// 計算當週的日期
+function calculateWeekDates() {
+  const today = new Date(); // 當前日期
+  const dayOfWeek = today.getDay(); // 今天是星期幾 (0: 星期日, 1: 星期一, ...)
+  const startOfWeek = new Date(today); // 複製當前日期
+  startOfWeek.setDate(today.getDate() - dayOfWeek); // 設定為當週星期日
+
+  // 生成當週 7 天的日期
+  const weekDates = [];
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(startOfWeek);
+    date.setDate(startOfWeek.getDate() + i); // 增加 i 天
+    weekDates.push(date);
+  }
+  return weekDates;
+}
+
+// 格式化日期為 "月/日 星期X"
+function formatDate(date) {
+  const options = { month: 'numeric', day: 'numeric' }; // 格式：月/日
+  const weekdayNames = ['日', '一', '二', '三', '四', '五', '六']; // 星期名稱
+  const formattedDate = date.toLocaleDateString('zh-TW', options);
+  const weekday = weekdayNames[date.getDay()];
+  return `${formattedDate} 星期${weekday}`;
+}
+
+// 更新所有琴房的按鈕文字
+function updateReservationButtons() {
+  const weekDates = calculateWeekDates(); // 獲取當週日期
+  const today = new Date(); // 獲取今天日期
+
+  // 找到每個琴房區塊中的按鈕
+  const roomContainers = document.querySelectorAll('.button-container');
+  roomContainers.forEach((container) => {
+    const buttons = container.querySelectorAll('.reservation-btn');
+    buttons.forEach((button, index) => {
+      if (index < weekDates.length) {
+        const buttonDate = weekDates[index];
+        button.innerText = formatDate(buttonDate); // 更新按鈕文字
+
+        // 比較日期，小於今天則設為灰色並禁用
+        if (buttonDate < today.setHours(0, 0, 0, 0)) {
+          button.style.backgroundColor = 'gray'; // 設定灰色背景
+          button.style.cursor = 'not-allowed'; // 改變游標為不可用樣式
+          button.onclick = null; // 禁止點擊事件
+        } else {
+          button.style.backgroundColor = ''; // 還原按鈕背景
+          button.style.cursor = 'pointer'; // 還原游標樣式
+          button.onclick = openDialog; // 恢復點擊事件
+        }
+      }
+    });
+  });
+}
+
+// 初始化
+document.addEventListener('DOMContentLoaded', () => {
+  updateReservationButtons(); // 在頁面加載時更新按鈕文字
+});
 

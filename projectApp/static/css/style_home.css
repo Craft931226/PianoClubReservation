@@ -56,7 +56,9 @@ body {
   header nav ul li {
   margin-right: 20px;
   }
-  
+  header nav ul li.welcome {
+    margin-right: 0px;
+}
   header nav ul li a {
   color: #fff;
   text-decoration: none;
