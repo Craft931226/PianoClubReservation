@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from .google_sheets import read_data
 
 # 試算表的範圍，包含用戶數據
-GOOGLE_SHEET_RANGE = '表單回應 1!A2:B'  # 假設試算表有 Name 和 Student ID 列
+GOOGLE_SHEET_RANGE = '社員資料!A2:B'  # 假設試算表有 Name 和 Student ID 列
 
 def second_page(request):
     error_message = None

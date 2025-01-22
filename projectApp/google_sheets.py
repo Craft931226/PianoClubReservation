@@ -1,3 +1,4 @@
+from http import client
 import json
 import os
 from google.oauth2.service_account import Credentials
@@ -20,6 +21,13 @@ service = build('sheets', 'v4', credentials=credentials)
 
 # SPREADSHEET_ID = '1TWp1XNDx46NPLRZQA9AVA1yghVxhA_2TZwwb9c0fIMA'
 
+# update_user_name 函數將用戶名更新到試算表中
+# Define the sheet names and ranges
+FORM_RESPONSES_SHEET = '社員資料'
+RESERVATION_LIMIT_SHEET = '預約上限'
+FORM_RESPONSES_RANGE = f'{FORM_RESPONSES_SHEET}!A1:B'  # 假設第一列為名稱，第二列為學號
+RESERVATION_LIMIT_RANGE = f'{RESERVATION_LIMIT_SHEET}!A1:B'  # 假設第一列為名稱，第二列為學號
+
 # 讀取數據
 def read_data(range_name):
     """從 Google 試算表中讀取數據"""
@@ -30,5 +38,8 @@ def read_data(range_name):
     except Exception as e:
         print(f"Error reading data: {e}")
         return []
+    
 
-print(read_data('表單回應 1!A1'))  # 讀取 Sheet1 表的 A1 區域的數據
+
+# 測試讀取數據
+print(read_data(f'{FORM_RESPONSES_SHEET}!A1:B5'))  # 測試讀取表單回應的前 5 行

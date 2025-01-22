@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
-
-    {% load static %}
-    <link rel="stylesheet" type= "text/css" href="{% static 'css/style_home.css' %}">
-    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
     
+    {% load static %}
+    <link rel="icon" href="{% static 'favicon.ico' %}">
+    <link rel="stylesheet" type= "text/css" href="{% static 'css/style_home.css' %}">
 </head>
 <body>
     <header>
@@ -17,7 +16,7 @@
                 <li><a href="#reservation" data-translate="預約系統">預約系統</a></li>
                 <li><a href="#notations" data-translate="注意事項">注意事項</a></li>
                 <li><a href="#questions" data-translate="常見問題">常見問題</a></li>
-                <li class="welcome" data-translate="歡迎">歡迎，{{ username }}</li>
+                <li class="welcome" data-translate="歡迎">歡迎，</li>
                 <li>{{ username }}</li>
                 <select id="languages">
                   <option value="zh">中文</option>
