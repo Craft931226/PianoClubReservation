@@ -42,3 +42,7 @@ def home_view(request):
 
     return render(request, "homePage.html", {'username': username})
 
+def change_password_view(request):
+
+
+    return render(request, "ChangePassword.html")

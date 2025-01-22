@@ -9,69 +9,87 @@ body {
     color: #333;
     
     }
-    header nav ul.drop-down-menu {
-    position: relative; /* 確保嵌套選單相對定位 */
-    }
-    
-    header nav ul.drop-down-menu ul {
-    display: none; /* 預設隱藏 */
-    position: absolute;
-    top: 100%; /* 位於父級項目下方 */
-    left: auto;
-    z-index: 99;
-    background-color: #333;
-    border: 1px solid #ccc;
-    min-width: 180px;
-    }
-    #hero {
-      height:100%;
-    }
-    
-    header nav ul.drop-down-menu li:hover > ul {
-    display: block; /* 滑鼠懸停時顯示 */
-    }
-    
-    header nav ul.drop-down-menu ul li {
-    left: 10px;
-    border-bottom: 1px solid #ccc;
-    }
-    
-    header nav ul.drop-down-menu ul li:last-child {
-    border-bottom: none;
-    }
-    
-    header {
+header {
     background: #333;
     color: #fff;
-    padding: 10px 20px;
-    }
+    height: 50px;
+}
     
-    header nav ul {
+/* 主選單樣式 */
+header nav ul {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
-    }
-    
-    header nav ul li {
+    align-items: center;
+}
+
+header nav ul li {
+    position: relative; /* 確保子選單能正確定位 */
     margin-right: 1.5%;
-    }
-    header nav ul li.welcome {
-      margin-right: 0px;
-  }
-    header nav ul li a {
+}
+
+header nav ul li a {
     color: #fff;
     text-decoration: none;
-    transition: color 0.3s;
-    }
-    
-    header nav ul li a:hover {
+    padding: 10px 20px; /* 控制按鈕內部的上下和左右間距 */
+    display: block;
+    height: 100%; /* 讓按鈕填滿 li 元素的高度 */
+    box-sizing: border-box; /* 包括內邊距和邊框計算在內 */
+}
+
+/* 主選單懸停樣式 */
+header nav ul li a:hover {
+    background: #555; /* 改變懸停時的背景色 */
+    color: #ff6347; /* 改變文字顏色 */
+    height: 100%; /* 確保背景色填滿 */
+}
+
+/* 子選單樣式 */
+header nav ul li ul {
+    display: none; /* 預設隱藏 */
+    position: absolute;
+    top: 100%; /* 放置於主選單項的正下方 */
+    left: 0;
+    background-color: #444;
+    padding: 0;
+    list-style: none;
+    border-radius: 5px;
+    min-width: 150px; /* 設置固定寬度 */
+    z-index: 100;
+}
+
+header nav ul li ul li {
+    width: 100%; /* 確保子選單項的寬度與父容器一致 */
+}
+
+header nav ul li ul li a {
+    padding: 10px 20px; /* 確保文字區域左右均勻 */
+    display: block;
+    white-space: nowrap; /* 防止文字換行 */
+
+}
+
+header nav ul li ul li a:hover {
+    background: #555; /* 滑鼠懸停時變色 */
     color: #ff6347;
+}
+
+/* 顯示子選單 */
+header nav ul li:hover > ul {
+    display: block;
+}
+li.welcome{
+  margin-right:0px;
+}
+a.name{
+  padding-left: 0px ;
+  padding-right: 0px;
+}
+
+    #hero {
+      height:100%;
     }
-    header nav ul li option:hover {
-    color: #ff6347;
-    }
-    
     #hero {
     background: url("hero-bg.jpg") no-repeat center center/cover;
     color: #fff;

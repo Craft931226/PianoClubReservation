@@ -1,6 +1,7 @@
 const translations = {
-    "預約系統": { en: "Reserve", zh: "預約系統" },
-    "注意事項": { en: "Note", zh: "注意事項" },
+    "主頁": { en: "Home", zh: "主頁" },
+    "預約系統": { en: "Reservation System", zh: "預約系統" },
+    "注意事項": { en: "Notations", zh: "注意事項" },
     "常見問題": { en: "F&Q", zh: "常見問題" },
     "歡迎": { en: "Welcome,", zh: "歡迎，" },
     "歡迎來到琴房預約系統": { en: "Welcome to the Piano Room Reservation System", zh: "歡迎來到琴房預約系統" },
