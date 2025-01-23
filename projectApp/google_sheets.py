@@ -5,7 +5,7 @@ from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 
 # 配置 Google Sheets API 憑證
-SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 # 從環境變數中加載憑證
 credentials_info = json.loads(os.getenv('GOOGLE_CREDENTIALS_JSON'))
 credentials = Credentials.from_service_account_info(credentials_info, scopes=SCOPES)
