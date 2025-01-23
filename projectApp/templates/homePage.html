@@ -21,14 +21,15 @@
                         <li><a href="#questions" data-translate="常見問題">常見問題</a></li>
                     </ul>
                 </li>
-                <li class="welcome" data-translate="歡迎">歡迎，</li>
                 <li>
-                  <a class="name">{{ username }}</a>
-                  <ul>
-                    <li><a href="{% url 'change_password' %}">更改密碼</a></li>
-                    <li><a>登出</a></li>
-                  </ul>
+                    <a href="#" data-translate="功能">功能</a>
+                    <ul>
+                        <li><a href="{% url 'change_password' %}" data-translate="更改密碼">更改密碼</a></li>
+                        <li><a href="{% url 'login' %}" data-translate="登出">登出</a></li>
+                    </ul>
                 </li>
+                <li class="welcome" data-translate="歡迎">歡迎，</li>
+                <li class="name">{{ username }}</li>
                 <select id="languages">
                     <option value="zh">中文</option>
                     <option value="en">English</option>
@@ -109,7 +110,7 @@
     </main>
 
     <footer>
-        <p data-translate="中央鋼琴社預約系統">中央鋼琴社預約系統>中央鋼琴社預約系統</p>
+        <p data-translate="中央鋼琴社預約系統">中央鋼琴社預約系統</p>
     </footer>
     <script src="{% static 'js/scroll.js' %}"></script>
 </body>

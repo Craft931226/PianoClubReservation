@@ -1,9 +1,9 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from .google_sheets import read_data
+from .google_sheets import read_data, update_data
 
 # 試算表的範圍，包含用戶數據
-GOOGLE_SHEET_RANGE = '社員資料!A2:B'  # 假設試算表有 Name 和 Student ID 列
+GOOGLE_SHEET_RANGE = '社員資料!A2:C'  # 假設試算表有 Name 和 Student ID 列
 
 def second_page(request):
     error_message = None
@@ -21,7 +21,7 @@ def second_page(request):
                 # 驗證用戶是否存在
                 user_found = False
                 for user in users:
-                    if len(user) >= 2 and user[0] == name and user[1] == student_id:
+                    if len(user) >= 2 and user[0] == name and user[2] == student_id:
                         user_found = True
                         # 登錄成功，將用戶名作為 URL 參數
                         return redirect(f'/home/?username={name}')
@@ -42,7 +42,46 @@ def home_view(request):
 
     return render(request, "homePage.html", {'username': username})
 
+
+
+
 def change_password_view(request):
+    error_message = None
+    success_message = None
 
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        current_password = request.POST.get('currentPassword')
+        new_password = request.POST.get('newPassword')
+        confirm_password = request.POST.get('confirmPassword')
 
-    return render(request, "ChangePassword.html")
+        if new_password != confirm_password:
+            error_message = "新密碼與確認密碼不符，請重新輸入。"
+        else:
+            try:
+                # 從 Google Sheets 獲取數據
+                users = read_data(GOOGLE_SHEET_RANGE)
+                if not users:
+                    error_message = "請檢查名子是否正確？。"
+                else:
+                    # 找到用戶
+                    user_found = False
+                    for index, user in enumerate(users):
+                        if len(user) >= 3 and user[0] == name and user[2] == current_password:
+                            user_found = True
+                            # 更新密碼
+                            range_to_update = f'社員資料!C{index + 2}'
+                            update_data(range_to_update, [[new_password]])
+                            success_message = "密碼修改成功！"
+                            return redirect('login')  # 修改成功後重定向到登錄頁面
+                            
+                    
+                    if not user_found:
+                        error_message = "用戶名或當前密碼錯誤，請重新輸入。"
+            except Exception as e:
+                error_message = f"系統錯誤：{e}"
+
+    return render(request, "ChangePassword.html", {
+        'error_message': error_message,
+        'success_message': success_message
+    })

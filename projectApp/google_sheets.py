@@ -38,7 +38,21 @@ def read_data(range_name):
     except Exception as e:
         print(f"Error reading data: {e}")
         return []
-    
+
+def update_data(range_name, values):
+    """更新 Google 試算表中的數據"""
+    try:
+        sheet = service.spreadsheets()
+        body = {'values': values}
+        result = sheet.values().update(
+            spreadsheetId=SPREADSHEET_ID,
+            range=range_name,
+            valueInputOption="RAW",
+            body=body
+        ).execute()
+        print(f"{result.get('updatedCells')} cells updated.")
+    except Exception as e:
+        print(f"Error updating data: {e}")
 
 
 # 測試讀取數據
