@@ -1,7 +1,9 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .google_sheets import read_data, update_data
+from django.core.signing import Signer, BadSignature
 
+signer = Signer()  # 簽名工具
 # 試算表的範圍，包含用戶數據
 GOOGLE_SHEET_RANGE = '社員資料!A2:C'  # 假設試算表有 Name 和 Student ID 列
 
@@ -13,18 +15,16 @@ def second_page(request):
         student_id = request.POST.get('student_id')
 
         try:
-            # 從 Google Sheets 獲取數據
-            users = read_data(GOOGLE_SHEET_RANGE)
+            users = read_data(GOOGLE_SHEET_RANGE)  # 獲取用戶數據
             if not users:
                 error_message = "無法讀取用戶數據，請稍後再試。"
             else:
-                # 驗證用戶是否存在
                 user_found = False
                 for user in users:
                     if len(user) >= 2 and user[0] == name and user[2] == student_id:
                         user_found = True
-                        # 登錄成功，將用戶名作為 URL 參數
-                        return redirect(f'/home/?username={name}')
+                        signed_username = signer.sign(name)  # 生成簽名的用戶名
+                        return redirect(f'/home/?username={signed_username}')
                 
                 if not user_found:
                     error_message = "帳號或密碼錯誤，請重新輸入。"
@@ -33,14 +33,16 @@ def second_page(request):
 
     return render(request, 'Login.html', {'error_message': error_message})
 
-
 def home_view(request):
-    # 從 URL 獲取用戶名
-    username = request.GET.get('username')
-    if not username:
-        return redirect('login')  # 如果沒有用戶名，重定向到登錄頁面
+    signed_username = request.GET.get('username')
+    if not signed_username:
+        return redirect('login')  # 如果沒有簽名的用戶名，重定向到登入頁面
 
-    return render(request, "homePage.html", {'username': username})
+    try:
+        username = signer.unsign(signed_username)  # 驗證簽名
+        return render(request, "homePage.html", {'username': username})
+    except BadSignature:
+        return redirect('login')  # 簽名無效時重定向到登入頁面
 
 
 
@@ -85,3 +87,26 @@ def change_password_view(request):
         'error_message': error_message,
         'success_message': success_message
     })
+
+from django.http import JsonResponse
+from .google_calendar import get_events_for_date
+
+def get_calendar_events_view(request):
+    if request.method == 'GET':
+        date = request.GET.get('date')  # ISO 格式的日期
+        print(date)
+        if not date:
+            return JsonResponse({'error': 'Missing date parameter'}, status=400)
+        
+        calendar_ids = [
+            'ncupianolarge@gmail.com',
+            'ncupianosmall@gmail.com',
+            'ncupianomedium@gmail.com',
+            'ncupiano31@gmail.com'
+        ]
+        
+        events = get_events_for_date(calendar_ids, date)
+        print(events)
+        return JsonResponse({'events': events}, status=200)
+    else:
+        return JsonResponse({'error': 'Method not allowed'}, status=405)

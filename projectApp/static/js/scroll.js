@@ -42,23 +42,92 @@ document.getElementById('languages').addEventListener('change', function () {
 });
 
 function openDialog(event) {
-  const button = event.currentTarget; // 取得被點擊的按鈕
-  const date = button.getAttribute('data-date'); // 獲取按鈕上的本地日期資訊
-  const roomType = button.closest('.button-container').previousElementSibling.textContent; // 獲取琴房類型
+  const button = event.currentTarget; 
+  const date = button.getAttribute('data-date'); 
 
-  // 更新彈窗內容
-  const dialog = document.getElementById("myDialog");
-  dialog.innerHTML = `
-    <p>預約日期：${date}</p>
-    <p>琴房類型：${roomType}</p>
-    <button onclick="closeDialog()">關閉</button>
-  `;
-  dialog.showModal();
+
+
+  // 獲取事件並更新對話框
+  fetch(`/get-calendar-events/?date=${date}`)
+      .then(response => response.json())
+      .then(data => {
+          if (data.error) {
+              console.error(data.error);
+              return;
+          }
+
+          const dialog = document.getElementById("myDialog");
+          const timeSlots = generateTimeSlots(data.events);
+          dialog.innerHTML = `
+              <h2>日期：${date}</h2>
+              <div class="time-slots">
+                  ${timeSlots}
+              </div>
+              <button onclick="closeDialog()">關閉</button>
+          `;
+          dialog.showModal();
+          // 將對話框滾動到頂部
+          dialog.scrollTop = 0;
+      })
+      .catch(error => {
+          console.error('Error fetching events:', error);
+      });
 }
+
+function generateTimeSlots(events) {
+  const slots = [];
+  const timeStart = new Date();
+  timeStart.setHours(8, 0, 0, 0); // 設定為當天的 08:00:00
+
+  const timeEnd = new Date();
+  timeEnd.setHours(22, 0, 0, 0); // 設定為當天的 23:00:00
+
+  for (let time = new Date(timeStart); time <= timeEnd; time.setMinutes(time.getMinutes() + 30)) {
+      const timeString = time.toTimeString().split(' ')[0].slice(0, 5); // 獲取本地時間 HH:mm 格式
+      // console.log(timeString);
+      const isOccupied = events.some(event => {
+          const eventStart = new Date(event.start).getTime();
+          const eventEnd = new Date(event.end).getTime();
+          return time.getTime() >= eventStart && time.getTime() < eventEnd;
+      });
+
+      // 每個時間段單獨用 <div> 包裹，實現一行一個時間
+      slots.push(`
+          <div class="time-slot-container">
+              <a class="time-slot ${isOccupied ? 'occupied' : 'available'}">
+                  ${timeString} ${isOccupied ? '(已預約)' : ''}
+              </a>
+          </div>
+      `);
+  }
+
+  return slots.join(''); // 返回 HTML 字符串
+}
+
+
 function closeDialog() {
   const dialog = document.getElementById("myDialog");
   dialog.close();
 }
+// 新增點擊灰色背景關閉對話框的功能
+document.addEventListener('click', function (event) {
+  const dialog = document.getElementById("myDialog");
+
+  // 確保對話框是打開的
+  if (dialog.open) {
+      // 判斷點擊是否發生在對話框外部
+      const rect = dialog.getBoundingClientRect();
+      const isInDialog =
+          event.clientX >= rect.left &&
+          event.clientX <= rect.right &&
+          event.clientY >= rect.top &&
+          event.clientY <= rect.bottom;
+
+      if (!isInDialog) {
+          dialog.close(); // 關閉對話框
+      }
+  }
+});
 
 function calculateWeekDates() {
   const today = new Date(); // 當前日期

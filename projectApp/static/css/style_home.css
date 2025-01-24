@@ -251,3 +251,44 @@ li.name{
           flex: 0 1 calc(100% - 20px); /* 每行顯示1個按鈕 */
       }
   }
+  .time-slot-container {
+    display: flex; /* 使用彈性盒子布局 */
+    justify-content: space-between; /* 子元素之間均勻分布 */
+    align-items: center; /* 垂直方向置中 */
+    width: 100%; /* 占滿父容器寬度 */
+    gap: 10px; /* 按鈕之間的間距 */
+    padding: 0; /* 移除內邊距 */
+    box-sizing: border-box; /* 包含內邊距在寬度內 */
+}
+.time-slots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.time-slot {
+    flex: 1; /* 讓每個按鈕平分可用空間 */
+    text-align: center; /* 文字置中 */
+    padding: 10px 15px; /* 增加按鈕內邊距 */
+    border-radius: 5px; /* 圓角 */
+    background-color: #e0ffe0; /* 默認可用狀態為綠色 */
+    color: #2b802b; /* 文字顏色 */
+    cursor: pointer; /* 滑鼠樣式 */
+    transition: background 0.3s; /* 背景色過渡效果 */
+    border: 1px solid #ccc; /* 按鈕邊框 */
+    box-sizing: border-box; /* 包含內邊距在寬度內 */
+}
+
+.time-slot.available {
+    background-color: #e0ffe0;
+    color: #2b802b;
+}
+.time-slot.available:hover {
+    background-color: #9ebc9e;
+}
+.time-slot.occupied {
+    background-color: #ffe0e0;
+    color: #802b2b;
+    cursor: not-allowed;
+}
