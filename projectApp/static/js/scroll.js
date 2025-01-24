@@ -40,12 +40,24 @@ document.getElementById('languages').addEventListener('change', function () {
         }
     });
 });
-
+function openLoadingDialog() {
+    const dialog = document.getElementById('LoadingDialog');
+    dialog.showModal();
+}
+function closeLoadingDialog() {
+    const dialog = document.getElementById('LoadingDialog');
+    dialog.close();
+}
 function openDialog(event) {
-  const button = event.currentTarget; 
-  const date = button.getAttribute('data-date'); 
+  const button = event.currentTarget;
+  const date = button.getAttribute('data-date');
 
+  // 取得對話框元素
+  const dialog = document.getElementById("myDialog");
 
+  openLoadingDialog(); // 開啟載入中對話框
+  
+  // dialog.showModal(); // 打開對話框
 
   // 獲取事件並更新對話框
   fetch(`/get-calendar-events/?date=${date}`)
@@ -53,11 +65,12 @@ function openDialog(event) {
       .then(data => {
           if (data.error) {
               console.error(data.error);
+              dialog.innerHTML = `<h2>加載失敗，請重試。</h2>`;
               return;
           }
 
-          const dialog = document.getElementById("myDialog");
-          const timeSlots = generateTimeSlots(data.events);
+          const timeSlots = generateTimeSlots(data.events, date);
+          closeLoadingDialog(); // 關閉載入中對話框
           dialog.innerHTML = `
               <h2>日期：${date}</h2>
               <div class="time-slots">
@@ -65,21 +78,22 @@ function openDialog(event) {
               </div>
               <button onclick="closeDialog()">關閉</button>
           `;
-          dialog.showModal();
+          dialog.showModal(); // 打開對話框
           // 將對話框滾動到頂部
           dialog.scrollTop = 0;
       })
       .catch(error => {
           console.error('Error fetching events:', error);
+          dialog.innerHTML = `<h2>發生錯誤，請稍後再試。</h2>`;
       });
 }
 
-function generateTimeSlots(events) {
+function generateTimeSlots(events, targetDate) {
   const slots = [];
-  const timeStart = new Date();
+  const timeStart = new Date(targetDate);
   timeStart.setHours(8, 0, 0, 0); // 設定為當天的 08:00:00
 
-  const timeEnd = new Date();
+  const timeEnd = new Date(targetDate);
   timeEnd.setHours(22, 0, 0, 0); // 設定為當天的 23:00:00
 
   for (let time = new Date(timeStart); time <= timeEnd; time.setMinutes(time.getMinutes() + 30)) {
@@ -129,10 +143,33 @@ document.addEventListener('click', function (event) {
   }
 });
 
+// 新增點擊灰色背景關閉對話框的功能
+document.addEventListener('click', function (event) {
+  const dialog = document.getElementById("LoadingDialog");
+
+  // 確保對話框是打開的
+  if (dialog.open) {
+      // 判斷點擊是否發生在對話框外部
+      const rect = dialog.getBoundingClientRect();
+      const isInDialog =
+          event.clientX >= rect.left &&
+          event.clientX <= rect.right &&
+          event.clientY >= rect.top &&
+          event.clientY <= rect.bottom;
+
+      if (!isInDialog) {
+          dialog.close(); // 關閉對話框
+      }
+  }
+});
+
 function calculateWeekDates() {
   const today = new Date(); // 當前日期
   const dayOfWeek = today.getDay(); // 今天是星期幾 (0: 星期日, 1: 星期一, ...)
   const startOfWeek = new Date(today); // 複製當前日期
+
+  // const offset = (dayOfWeek + 1) % 7; // 從今天向前偏移到最近的星期六
+  // startOfWeek.setDate(today.getDate() - offset); // 設定為當週星期六
   startOfWeek.setDate(today.getDate() - dayOfWeek); // 設定為當週星期日
 
   // 生成當週 7 天的日期
