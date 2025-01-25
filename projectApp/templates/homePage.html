@@ -56,7 +56,7 @@
               <p>開發中</p>
               <button onclick="closeDialog()">關閉</button>
             </dialog>
-          <h3>大琴房</h3>
+          <h3 data-translate="大琴房">大琴房</h3>
           <div class="button-container">
               <a class="reservation-btn" onclick="openDialog()"></a>
               <a class="reservation-btn" onclick="openDialog()"></a>
@@ -66,7 +66,7 @@
               <a class="reservation-btn" onclick="openDialog()"></a>
               <a class="reservation-btn" onclick="openDialog()"></a>
           </div>
-          <h3>中琴房</h3>
+          <h3 data-translate="中琴房">中琴房</h3>
           <div class="button-container">
               <a class="reservation-btn" onclick="openDialog()"></a>
               <a class="reservation-btn" onclick="openDialog()"></a>
@@ -76,7 +76,7 @@
               <a class="reservation-btn" onclick="openDialog()"></a>
               <a class="reservation-btn" onclick="openDialog()"></a>
           </div>
-          <h3>小琴房</h3>
+          <h3 data-translate="小琴房">小琴房</h3>
           <div class="button-container">
               <a class="reservation-btn" onclick="openDialog()"></a>
               <a class="reservation-btn" onclick="openDialog()"></a>
@@ -86,7 +86,7 @@
               <a class="reservation-btn" onclick="openDialog()"></a>
               <a class="reservation-btn" onclick="openDialog()"></a>
           </div>
-          <h3>社窩</h3>
+          <h3 data-translate="社窩">社窩</h3>
           <div class="button-container">
               <a class="reservation-btn" onclick="openDialog()"></a>
               <a class="reservation-btn" onclick="openDialog()"></a>
@@ -116,6 +116,10 @@
     <footer>
         <p data-translate="中央鋼琴社預約系統">中央鋼琴社預約系統</p>
     </footer>
+    <script>
+        const currentUsername = "{{ username|escapejs }}"; // 確保後端的 `username` 被安全傳遞
+        const csrfToken = "{{ csrf_token }}"; // 從模板上下文中獲取 CSRF token
+    </script>
     <script src="{% static 'js/scroll.js' %}"></script>
 </body>
 </html>

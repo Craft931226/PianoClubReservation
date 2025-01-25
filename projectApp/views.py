@@ -1,11 +1,17 @@
+from datetime import datetime, timedelta, timezone
+import json
+from zoneinfo import ZoneInfo
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .google_sheets import read_data, update_data
 from django.core.signing import Signer, BadSignature
+from django.http import JsonResponse
+from .google_calendar import create_event, get_events_for_date, create_event, service
 
 signer = Signer()  # 簽名工具
 # 試算表的範圍，包含用戶數據
 GOOGLE_SHEET_RANGE = '社員資料!A2:C'  # 假設試算表有 Name 和 Student ID 列
+RESERVATION_LIMIT_RANGE = '預約上限!A2:B'  # 假設試算表有 Name 和 Limit 列
 
 def second_page(request):
     error_message = None
@@ -88,25 +94,182 @@ def change_password_view(request):
         'success_message': success_message
     })
 
-from django.http import JsonResponse
-from .google_calendar import get_events_for_date
 
 def get_calendar_events_view(request):
     if request.method == 'GET':
         date = request.GET.get('date')  # ISO 格式的日期
-        print(date)
-        if not date:
-            return JsonResponse({'error': 'Missing date parameter'}, status=400)
-        
-        calendar_ids = [
-            'ncupianolarge@gmail.com',
-            'ncupianosmall@gmail.com',
-            'ncupianomedium@gmail.com',
-            'ncupiano31@gmail.com'
-        ]
-        
-        events = get_events_for_date(calendar_ids, date)
+        room_type = request.GET.get('roomType')  # 獲取琴房類型
+        print(f"日期: {date}, 琴房類型: {room_type}")
+
+        if not date or not room_type:
+            return JsonResponse({'error': 'Missing parameters'}, status=400)
+
+        # 將琴房類型映射到日曆 ID
+        calendar_mapping = {
+            '大琴房': 'ncupianolarge@gmail.com',
+            '中琴房': 'ncupianomedium@gmail.com',
+            '小琴房': 'ncupianosmall@gmail.com',
+            '社窩': 'ncupiano31@gmail.com'
+        }
+
+        calendar_id = calendar_mapping.get(room_type)
+        if not calendar_id:
+            return JsonResponse({'error': 'Invalid room type'}, status=400)
+
+        # 獲取指定日曆的事件
+        events = get_events_for_date([calendar_id], date)
         print(events)
         return JsonResponse({'events': events}, status=200)
     else:
         return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+def calculate_time_range(date, start_time):
+    tz = ZoneInfo("Asia/Taipei")  # 使用 zoneinfo 設定時區
+    
+    # 將日期和時間結合，並附加時區
+    start_datetime = datetime.fromisoformat(f"{date}T{start_time}:00").replace(tzinfo=tz)
+    
+    # 計算 timeMin 和 timeMax
+    time_min = start_datetime.isoformat()
+    time_max = (start_datetime + timedelta(minutes=30)).isoformat()
+    
+    return time_min, time_max
+def create_calendar_event_view(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            print("接收到的數據:", data)
+
+            date = data.get('date')
+            start_time = data.get('start_time')
+            user_name = data.get('user_name')
+            room_type = data.get('room_type')
+            duration = int(data.get('duration', 30))
+
+            print(f"準備創建事件: 日期={date}, 時間={start_time}, 使用者={user_name}, 琴房={room_type}, 時長={duration}分鐘")
+
+            # 檢查使用者是否超過預約次數上限
+            reservation_data = read_data(RESERVATION_LIMIT_RANGE)
+            user_found = False
+
+            for index, row in enumerate(reservation_data):
+                if len(row) >= 2 and row[0] == user_name:  # 比對使用者名稱
+                    user_found = True
+                    current_count = int(row[1]) if row[1].isdigit() else 0
+                    if current_count >= 14:
+                        return JsonResponse({'success': False, 'error': '您已達到每周預約上限（14次）。'})
+
+                    # 更新次數 +1
+                    reservation_data[index][1] = current_count + 1
+                    range_to_update = f'預約上限!B{index + 2}'  # 假設第二列為預約次數
+                    update_data(range_to_update, [[current_count + 1]])
+                    break
+
+            if not user_found:
+                return JsonResponse({'success': False, 'error': '使用者未找到，請聯繫管理員。'})
+
+            # 創建事件
+            created_event = create_event(
+                date=date,
+                start_time=start_time,
+                user_name=user_name,
+                room_type=room_type,
+                duration=duration
+            )
+            print("創建成功:", created_event)
+            return JsonResponse({'success': True, 'event': created_event})
+        except Exception as e:
+            print("創建事件失敗:", str(e))  # 打印錯誤訊息
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+def cancel_calendar_event_by_time(request):
+    if request.method == 'GET':  # 接受 GET 請求
+        try:
+            date = request.GET.get('date')
+            start_time = request.GET.get('start_time')
+            room_type = request.GET.get('roomType')
+            user_name = request.GET.get('user_name')
+
+            if not date or not start_time or not room_type or not user_name:
+                return JsonResponse({'success': False, 'error': 'Missing required parameters'}, status=400)
+
+            # 將琴房類型映射到日曆 ID
+            calendar_mapping = {
+                '大琴房': 'ncupianolarge@gmail.com',
+                '中琴房': 'ncupianomedium@gmail.com',
+                '小琴房': 'ncupianosmall@gmail.com',
+                '社窩': 'ncupiano31@gmail.com'
+            }
+            calendar_id = calendar_mapping.get(room_type)
+            if not calendar_id:
+                return JsonResponse({'success': False, 'error': '無效的琴房類型'}, status=400)
+
+            # 計算完整的開始時間
+            time_min, time_max = calculate_time_range(date, start_time)
+            print(f"使用的日曆 ID: {calendar_id}, timeMin: {time_min}, timeMax: {time_max}")
+
+            # 獲取當日所有事件
+            events_result = service.events().list(
+                calendarId=calendar_id,
+                timeMin=time_min,
+                timeMax=time_max,
+                singleEvents=True,
+                orderBy='startTime'
+            ).execute()
+
+            print("查詢到的事件:", events_result)
+
+            # 查找對應的事件
+            events = events_result.get('items', [])
+            target_event = None
+            for event in events:
+                print(f"檢查事件: {event}")
+                if user_name in event.get('summary', ''):  # 確認事件是否屬於該用戶
+                    target_event = event
+                    break
+                
+            if not target_event:
+                return JsonResponse({'success': False, 'error': '未找到符合條件的事件'}, status=404)
+
+            # 刪除事件
+            service.events().delete(calendarId=calendar_id, eventId=target_event['id']).execute()
+
+            # 減少預約次數
+            reservation_data = read_data(RESERVATION_LIMIT_RANGE)
+            user_found = False
+
+            for index, row in enumerate(reservation_data):
+                if len(row) >= 2 and row[0] == user_name:  # 比對使用者名稱
+                    user_found = True
+                    current_count = int(row[1]) if row[1].isdigit() else 0
+                    if current_count > 0:
+                        reservation_data[index][1] = current_count - 1
+                        range_to_update = f'預約上限!B{index + 2}'  # 假設第二列為預約次數
+                        update_data(range_to_update, [[current_count - 1]])
+                    break
+
+            if not user_found:
+                return JsonResponse({'success': False, 'error': '使用者未找到，請聯繫管理員。'})
+            return JsonResponse({'success': True, 'message': '預約已取消'})
+
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+
+# # 測試創建事件
+# try:
+#     created_event = create_event(
+#         date="2025-01-24",
+#         start_time="14:00",
+#         user_name="周訓練",
+#         room_type="大琴房",
+#         duration=60
+#     )
+#     print("創建成功:", created_event)
+# except Exception as e:
+#     print("創建事件失敗:", e)

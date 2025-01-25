@@ -43,3 +43,48 @@ def get_events_for_date(calendar_ids, date):
             'end': end
         })
     return formatted_events
+
+def create_event(date, start_time, user_name, room_type, duration):
+    """
+    創建 Google Calendar 事件
+    :param date: 日期 (格式: YYYY-MM-DD)
+    :param start_time: 開始時間 (格式: HH:MM)
+    :param user_name: 使用者姓名
+    :param room_type: 琴房類型 (如: '大琴房', '中琴房', '小琴房')
+    :param duration: 使用時間 (單位: 分鐘，例如 30 或 60)
+    :return: 創建的事件詳細信息
+    """
+    # 琴房類型對應的日曆 ID
+    calendar_mapping = {
+        '大琴房': 'ncupianolarge@gmail.com',
+        '中琴房': 'ncupianomedium@gmail.com',
+        '小琴房': 'ncupianosmall@gmail.com',
+        '社窩': 'ncupiano31@gmail.com'
+    }
+    
+    calendar_id = calendar_mapping.get(room_type)
+    if not calendar_id:
+        raise ValueError(f"無效的琴房類型: {room_type}")
+
+    # 計算開始和結束時間
+    start_datetime = datetime.fromisoformat(f"{date}T{start_time}:00")
+    end_datetime = start_datetime + timedelta(minutes=duration)
+
+    # 建立事件內容
+    event = {
+        'summary': f"{user_name} 預約 {room_type}",
+        'description': f"使用者: {user_name}\n琴房類型: {room_type}\n預約時長: {duration} 分鐘",
+        'start': {
+            'dateTime': start_datetime.isoformat(),
+            'timeZone': 'Asia/Taipei'
+        },
+        'end': {
+            'dateTime': end_datetime.isoformat(),
+            'timeZone': 'Asia/Taipei'
+        }
+    }
+
+    # 創建事件
+    created_event = service.events().insert(calendarId=calendar_id, body=event).execute()
+    print(f"事件已創建: {created_event.get('htmlLink')}")
+    return created_event

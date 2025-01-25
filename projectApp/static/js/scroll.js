@@ -8,11 +8,15 @@ const translations = {
     "登出": { en: "Logout", zh: "登出" },
     "歡迎": { en: "Welcome,", zh: "歡迎，" },
     "歡迎來到琴房預約系統": { en: "Welcome to the Piano Room Reservation System", zh: "歡迎來到琴房預約系統" },
+    "大琴房" : { en: "Large Piano room", zh: "大琴房"},
+    "中琴房" : { en: "Medium Piano room", zh: "中琴房"},
+    "小琴房" : { en: "Small Piano room", zh: "小琴房"},
+    "社窩" : { en: "Club room", zh: "社窩"},
     "若您是第一次使用，請閱讀以下注意事項": { en: "If this is your first time, please read the following precautions", zh: "若您是第一次使用，請閱讀以下注意事項" },
     "中央鋼琴社預約系統": { en: "National Central University Piano Society Reservation System", zh: "中央鋼琴社預約系統" },
     "每人每周不得預約超過七小時，違規者系統自動取消。": { en: "1.Each person is not allowed to book more than seven hours per week. Violators will have their reservations automatically canceled.", zh: "1.每人每周不得預約超過七小時，違規者系統自動取消。" },
     "為達使用琴房效率最大化，預約後若無法到場請記得取消預約": { en: "2.To maximize the efficiency of using the piano room, please remember to cancel your reservation if you cannot attend.", zh: "2.為達使用琴房效率最大化，預約後若無法到場請記得取消預約" },
-    "開完琴房後鑰匙請記得掛回社窩，並鎖上門。": { en: "3.After using the piano room, please remember to hang the key back in the club room and lock the door.", zh: "3.開完琴房後鑰匙請記得掛回社窩，並鎖上門。" },
+    "開完琴房後鑰匙請記得掛回社窩，並鎖上門。": { en: "3.After unlocking the piano room, please remember to hang the key back in the club room and lock the door.", zh: "3.開完琴房後鑰匙請記得掛回社窩，並鎖上門。" },
     "離開琴房時請記得關燈、鎖門。": { en: "4.When leaving the piano room, please remember to turn off the lights and lock the door.", zh: "4.離開琴房時請記得關燈、鎖門。" },
     "有任何問題請聯絡網管。": { en: "5.If you have any questions, please contact the network administrator.Email:yanchaun0970@gmail.com", zh: "5.有任何問題請聯絡網管。Email:yanchaun0970@gmail.com" }
 };
@@ -48,19 +52,19 @@ function closeLoadingDialog() {
     const dialog = document.getElementById('LoadingDialog');
     dialog.close();
 }
+
 function openDialog(event) {
   const button = event.currentTarget;
   const date = button.getAttribute('data-date');
+  const roomType = button.closest('.button-container').previousElementSibling.textContent.trim(); // 獲取琴房類型
 
-  // 取得對話框元素
   const dialog = document.getElementById("myDialog");
+  dialog.setAttribute('data-date', date); // 設定對話框屬性 date
 
-  openLoadingDialog(); // 開啟載入中對話框
-  
-  // dialog.showModal(); // 打開對話框
+  openLoadingDialog(); // 顯示加載對話框
 
   // 獲取事件並更新對話框
-  fetch(`/get-calendar-events/?date=${date}`)
+  fetch(`/get-calendar-events/?date=${date}&roomType=${encodeURIComponent(roomType)}`)
       .then(response => response.json())
       .then(data => {
           if (data.error) {
@@ -69,18 +73,18 @@ function openDialog(event) {
               return;
           }
 
-          const timeSlots = generateTimeSlots(data.events, date);
-          closeLoadingDialog(); // 關閉載入中對話框
+          const timeSlots = generateTimeSlots(data.events, date, roomType, currentUsername);
+          closeLoadingDialog(); // 關閉加載對話框
           dialog.innerHTML = `
-              <h2>日期：${date}</h2>
+              <h2>日期：${date}<br>${roomType}</h2>
               <div class="time-slots">
                   ${timeSlots}
               </div>
               <button onclick="closeDialog()">關閉</button>
           `;
-          dialog.showModal(); // 打開對話框
-          // 將對話框滾動到頂部
-          dialog.scrollTop = 0;
+          
+          dialog.showModal();
+          dialog.scrollTop = 0; // 滾動到頂部
       })
       .catch(error => {
           console.error('Error fetching events:', error);
@@ -88,35 +92,201 @@ function openDialog(event) {
       });
 }
 
-function generateTimeSlots(events, targetDate) {
+
+function generateTimeSlots(events, targetDate, roomType, userName) {
+  // console.log("事件數據:", events);
   const slots = [];
   const timeStart = new Date(targetDate);
   timeStart.setHours(8, 0, 0, 0); // 設定為當天的 08:00:00
 
   const timeEnd = new Date(targetDate);
-  timeEnd.setHours(22, 0, 0, 0); // 設定為當天的 23:00:00
+  timeEnd.setHours(22, 0, 0, 0); // 設定為當天的 22:00:00
+
+  const currentDateTime = new Date(); // 獲取當前日期時間
 
   for (let time = new Date(timeStart); time <= timeEnd; time.setMinutes(time.getMinutes() + 30)) {
+      // 檢查時間是否已過
+      if (time < currentDateTime) {
+          continue; // 跳過已過去的時間
+      }
       const timeString = time.toTimeString().split(' ')[0].slice(0, 5); // 獲取本地時間 HH:mm 格式
-      // console.log(timeString);
-      const isOccupied = events.some(event => {
+
+      // 檢查當前時間段是否被預約
+      const occupiedEvent = events.find(event => {
           const eventStart = new Date(event.start).getTime();
           const eventEnd = new Date(event.end).getTime();
           return time.getTime() >= eventStart && time.getTime() < eventEnd;
       });
 
+      let occupiedMessage = '';
+      let cancelBtn = '';
+
+      if (occupiedEvent) {
+          console.log("事件ID:", occupiedEvent.id); // 確認是否獲取到正確的事件 ID
+          // 從事件 summary 提取預約者姓名
+          const summary = occupiedEvent.summary || '';
+          const nameMatch = summary.match(/^(.*?) 預約/); // 匹配 "XXX 預約"
+          const reserverName = nameMatch ? nameMatch[1] : '未知';
+           // 如果當前使用者是預約者，顯示取消按鈕
+           if (reserverName === userName) {
+            cancelBtn = `
+                <button class="cancel-button" onclick="cancelReservationByTime('${targetDate}', '${timeString}', '${roomType}', '${userName}')">
+                    取消
+                </button>
+            `;
+           }
+           occupiedMessage = `(已被<i>${reserverName}</i>預約)`; // 顯示預約者姓名
+        }
+
       // 每個時間段單獨用 <div> 包裹，實現一行一個時間
       slots.push(`
           <div class="time-slot-container">
-              <a class="time-slot ${isOccupied ? 'occupied' : 'available'}">
-                  ${timeString} ${isOccupied ? '(已預約)' : ''}
+              <a class="time-slot ${occupiedEvent ? 'occupied' : 'available'}" 
+                  onclick="handleTimeSlotClick('${targetDate}', '${timeString}', '${userName}', '${roomType}', ${!!occupiedEvent})">
+                  ${timeString} ${occupiedMessage}
               </a>
+              ${cancelBtn}
           </div>
       `);
   }
 
   return slots.join(''); // 返回 HTML 字符串
 }
+
+
+function handleTimeSlotClick(date, time, userName, roomType, isOccupied) {
+  if (isOccupied) {
+      alert('該時間段已被預約！');
+      return;
+  }
+
+  const duration = 30; // 預設使用時間為 30 分鐘
+  const payload = {
+      date: date,
+      start_time: time,
+      user_name: userName,
+      room_type: roomType,
+      duration: duration
+  };
+
+  console.log("發送的參數:", payload);
+
+  // 禁用所有時間段按鈕
+  const timeSlotButtons = document.querySelectorAll('.time-slot');
+  timeSlotButtons.forEach(button => {
+      button.setAttribute('disabled', true);
+      button.style.cursor = 'not-allowed'; // 更新游標樣式
+      button.style.opacity = '0.5'; // 顯示禁用狀態
+  });
+
+  fetch('/create-calendar-event/', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken // 添加 CSRF Token
+      },
+      body: JSON.stringify(payload),
+  })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              // alert('預約成功！');
+
+              // 更新時間段
+              fetch(`/get-calendar-events/?date=${date}&roomType=${encodeURIComponent(roomType)}`)
+                  .then(response => response.json())
+                  .then(data => {
+                      if (data.error) {
+                          console.error("更新時間表失敗:", data.error);
+                          return;
+                      }
+
+                      const updatedTimeSlots = generateTimeSlots(data.events, date, roomType, userName);
+                      const dialog = document.getElementById("myDialog");
+                      dialog.querySelector('.time-slots').innerHTML = updatedTimeSlots;
+                  })
+                  .catch(error => {
+                      console.error('更新時間表時發生錯誤:', error);
+                  });
+          } else {
+              alert('預約失敗：' + data.error);
+          }
+      })
+      .catch(error => {
+          console.error('發生錯誤:', error);
+          alert('預約失敗，請稍後再試。');
+      })
+      .finally(() => {
+          // 恢復所有時間段按鈕的可用性
+          timeSlotButtons.forEach(button => {
+              button.removeAttribute('disabled');
+              button.style.cursor = 'pointer';
+              button.style.opacity = '1';
+          });
+      });
+}
+
+function cancelReservationByTime(date, time, roomType, userName) {
+  if (!confirm('確定要取消這個預約嗎？')) {
+      return;
+  }
+  const dialog = document.getElementById("myDialog");
+  const updatedDate = dialog.getAttribute('data-date'); // 確保從對話框屬性獲取日期
+
+  if (!updatedDate) {
+      console.error('無法獲取日期，請檢查對話框屬性');
+      return;
+  }
+
+  // 禁用所有時間段按鈕
+  const timeSlotButtons = document.querySelectorAll('.time-slot');
+  timeSlotButtons.forEach(button => {
+      button.setAttribute('disabled', true);
+      button.style.cursor = 'not-allowed'; // 更新游標樣式
+      button.style.opacity = '0.5'; // 顯示禁用狀態
+  });
+  const url = `/cancel-calendar-event-by-time/?date=${encodeURIComponent(date)}&start_time=${encodeURIComponent(time)}&roomType=${encodeURIComponent(roomType)}&user_name=${encodeURIComponent(userName)}`;
+
+  fetch(url, {
+      method: 'GET',
+      headers: {
+          'X-CSRFToken': csrfToken // 添加 CSRF Token
+      },
+  })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              // alert('預約已取消！');
+              // 更新時間段
+              fetch(`/get-calendar-events/?date=${updatedDate}&roomType=${encodeURIComponent(roomType)}`)
+                  .then(response => response.json())
+                  .then(data => {
+                      if (data.error) {
+                          console.error("更新時間表失敗:", data.error);
+                          return;
+                      }
+                      const updatedTimeSlots = generateTimeSlots(data.events, date, roomType, userName);
+                      dialog.querySelector('.time-slots').innerHTML = updatedTimeSlots;
+                  });
+          } else {
+              alert('取消失敗：' + data.error);
+          }
+      })
+      .catch(error => {
+          console.error('取消預約時發生錯誤:', error);
+          alert('取消失敗，請稍後再試。');
+      })
+      .finally(() => {
+        // 恢復所有時間段按鈕的可用性
+        timeSlotButtons.forEach(button => {
+            button.removeAttribute('disabled');
+            button.style.cursor = 'pointer';
+            button.style.opacity = '1';
+        });
+    });
+}
+
+
 
 
 function closeDialog() {
@@ -168,9 +338,9 @@ function calculateWeekDates() {
   const dayOfWeek = today.getDay(); // 今天是星期幾 (0: 星期日, 1: 星期一, ...)
   const startOfWeek = new Date(today); // 複製當前日期
 
-  // const offset = (dayOfWeek + 1) % 7; // 從今天向前偏移到最近的星期六
-  // startOfWeek.setDate(today.getDate() - offset); // 設定為當週星期六
-  startOfWeek.setDate(today.getDate() - dayOfWeek); // 設定為當週星期日
+  const offset = (dayOfWeek + 1) % 7; // 從今天向前偏移到最近的星期六
+  startOfWeek.setDate(today.getDate() - offset); // 設定為當週星期六
+  // startOfWeek.setDate(today.getDate() - dayOfWeek); // 設定為當週星期日
 
   // 生成當週 7 天的日期
   const weekDates = [];
