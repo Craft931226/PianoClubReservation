@@ -1,11 +1,11 @@
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 import json
 from zoneinfo import ZoneInfo
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
-from projectApp.google_gmail import send_email
-from .google_sheets import get_user_email, read_data, update_data
+from projectApp.google_gmail import send_cancel_email, send_email
+from .google_sheets import get_user_email, read_data, reset_reservation_limits, update_data
 from django.core.signing import Signer, BadSignature
 from django.http import JsonResponse
 from .google_calendar import create_event, get_events_for_date, create_event, service
@@ -48,9 +48,14 @@ def home_view(request):
 
     try:
         username = signer.unsign(signed_username)  # 驗證簽名
+
+        # 每次訪問時檢查是否需要重置
+        reset_limits_if_needed()
+
         return render(request, "homePage.html", {'username': username})
     except BadSignature:
         return redirect('login')  # 簽名無效時重定向到登入頁面
+
 
 
 
@@ -179,7 +184,7 @@ def create_calendar_event_view(request):
                 duration=duration
             )
             print("創建成功:", created_event)
-            
+
             recipient_email = get_user_email(user_name)
             full_time = f"{date} {start_time}"
             send_result = send_email(user_name, full_time, room_type, recipient_email)
@@ -258,7 +263,11 @@ def cancel_calendar_event_by_time(request):
                         range_to_update = f'預約上限!B{index + 1}'  # 假設第二列為預約次數
                         update_data(range_to_update, [[current_count - 1]])
                     break
-
+            recipient_email = get_user_email(user_name)
+            full_time = f"{date} {start_time}"
+            send_result = send_cancel_email(user_name, full_time, room_type, recipient_email)
+            if "error" in send_result:
+                print("郵件發送錯誤：", send_result["error"])
             if not user_found:
                 return JsonResponse({'success': False, 'error': '使用者未找到，請聯繫管理員。'})
             return JsonResponse({'success': True, 'message': '預約已取消'})
@@ -268,7 +277,36 @@ def cancel_calendar_event_by_time(request):
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
 
+def get_last_sunday(input_date):
+    """
+    計算指定日期所在周的星期天日期
+    :param input_date: 指定日期
+    :return: 該日期所在周的星期天
+    """
+    return input_date - timedelta(days=input_date.weekday() + 1) if input_date.weekday() != 6 else input_date
 
+def reset_limits_if_needed():
+    """
+    如果預約次數尚未重置，檢查是否需要執行重置操作。
+    """
+    try:
+        # 檢查試算表中的上次重置日期
+        status_range = '系統狀態!A1:B1'
+        status_data = read_data(status_range)
+        last_reset_date = status_data[0][1] if len(status_data) > 0 and len(status_data[0]) > 1 else None
+
+        # 當前日期
+        today = date.today()
+        last_sunday = get_last_sunday(today)  # 獲取當前日期所在周的星期天
+
+        # 如果 last_reset_date 為空，或者不屬於當週，執行重置
+        if not last_reset_date or date.fromisoformat(last_reset_date) < last_sunday:
+            reset_reservation_limits()  # 重置 B 欄
+            print(f"執行重置操作，將預約次數重置為 0 (日期: {today})")
+        else:
+            print(f"不需要重置，最後重置日期為: {last_reset_date}")
+    except Exception as e:
+        print(f"重置檢查過程中出錯: {e}")
 
 # # 測試創建事件
 # try:

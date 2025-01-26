@@ -113,10 +113,61 @@ def send_email(name, time, room_type, recipient_email):
         print("郵件發送失敗: %s" % error)
         return None
 
-# 測試發送郵件
-send_email(
-    name="周訓練",
-    time="2025-01-26 10:00",
-    room_type="大琴房",
-    recipient_email="yanchaun0970@gmail.com"
-)
+def send_cancel_email(name, time, room_type, recipient_email):
+    """
+    發送郵件通知
+    :param name: 預約者姓名
+    :param time: 預約時間 (格式: YYYY-MM-DD HH:MM)
+    :param room_type: 預約房間類型
+    :param recipient_email: 收件人電子郵件地址
+    :return: 發送結果
+    """
+    try:
+        service = get_gmail_service()
+        if not service:
+            raise Exception("Gmail API 初始化失敗")
+        # 構建郵件內容
+        subject = "您的琴房預約取消通知 | Your Piano Room Reservation Cancellation"
+        body = f"""
+        親愛的 {name} 您好，
+
+        您已成功取消預約琴房：
+        - 取消預約時間：{time}
+        - 取消琴房類型：{room_type}
+
+        感謝您的使用！
+
+        中央鋼琴社 敬上
+
+        Dear {name},
+
+        You have successfully canceled the reservation of the piano room:
+        - Canceled Reservation Time: {time}
+        - Canceled Room Type: {room_type}
+
+        Thank you for using our service!
+
+        Best regards,
+        NCU Piano Club
+        """
+        message = MIMEText(body)
+        message["to"] = recipient_email
+        message["subject"] = subject
+        raw = base64.urlsafe_b64encode(message.as_bytes()).decode()
+        body = {"raw": raw}
+
+        messages = service.users().messages()
+        message = messages.send(userId="me", body=body).execute()
+        print("郵件已成功發送，ID：", message["id"])
+        return message
+    except Exception as error:
+        print("郵件發送失敗: %s" % error)
+        return None
+
+# # 測試發送郵件
+# send_email(
+#     name="周訓練",
+#     time="2025-01-26 10:00",
+#     room_type="大琴房",
+#     recipient_email="yanchaun0970@gmail.com"
+# )

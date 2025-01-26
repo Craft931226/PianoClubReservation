@@ -1,3 +1,4 @@
+from datetime import date
 from http import client
 import json
 import os
@@ -70,6 +71,39 @@ def get_user_email(user_name):
     except Exception as e:
         print(f"Error retrieving email for user {user_name}: {e}")
         return None
+
+def reset_reservation_limits():
+    """
+    將預約上限試算表中的 B 欄（預約次數）全部重置為 0。
+    僅當本週未執行過重置操作時執行。
+    """
+    try:
+        # 檢查是否已經重置過
+        status_range = '系統狀態!A1:B1'
+        status_data = read_data(status_range)
+        last_reset_date = status_data[0][1] if len(status_data) > 0 and len(status_data[0]) > 1 else None
+
+        today = date.today()
+        if last_reset_date == today.isoformat():
+            print("今天已經執行過重置操作，跳過重置")
+            return
+
+        # 讀取當前試算表中的數據
+        data = read_data(RESERVATION_LIMIT_RANGE)
+        if not data:
+            print("無法讀取預約上限數據")
+            return
+
+        # 構建新的數據，將 B 欄設置為 0
+        reset_values = [[row[0], 0] for row in data if len(row) > 0]
+        update_data(RESERVATION_LIMIT_RANGE, reset_values)
+        print("預約次數已重置為 0")
+
+        # 更新重置日期
+        update_data(status_range, [["last_reset_date", today.isoformat()]])
+        print("重置標記已更新")
+    except Exception as e:
+        print(f"重置預約次數失敗：{e}")
 
 # 測試讀取數據
 print(read_data(f'{FORM_RESPONSES_SHEET}!A1:B5'))  # 測試讀取表單回應的前 5 行

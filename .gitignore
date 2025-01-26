@@ -20,3 +20,6 @@ venv/
 
 token.pickle
 
+credentials.json
+
+test.py

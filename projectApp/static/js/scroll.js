@@ -14,11 +14,26 @@ const translations = {
     "社窩" : { en: "Club room", zh: "社窩"},
     "若您是第一次使用，請閱讀以下注意事項": { en: "If this is your first time, please read the following precautions", zh: "若您是第一次使用，請閱讀以下注意事項" },
     "中央鋼琴社預約系統": { en: "National Central University Piano Society Reservation System", zh: "中央鋼琴社預約系統" },
-    "每人每周不得預約超過七小時，違規者系統自動取消。": { en: "1.Each person is not allowed to book more than seven hours per week. Violators will have their reservations automatically canceled.", zh: "1.每人每周不得預約超過七小時，違規者系統自動取消。" },
-    "為達使用琴房效率最大化，預約後若無法到場請記得取消預約": { en: "2.To maximize the efficiency of using the piano room, please remember to cancel your reservation if you cannot attend.", zh: "2.為達使用琴房效率最大化，預約後若無法到場請記得取消預約" },
-    "開完琴房後鑰匙請記得掛回社窩，並鎖上門。": { en: "3.After unlocking the piano room, please remember to hang the key back in the club room and lock the door.", zh: "3.開完琴房後鑰匙請記得掛回社窩，並鎖上門。" },
-    "離開琴房時請記得關燈、鎖門。": { en: "4.When leaving the piano room, please remember to turn off the lights and lock the door.", zh: "4.離開琴房時請記得關燈、鎖門。" },
-    "有任何問題請聯絡網管。": { en: "5.If you have any questions, please contact the network administrator.Email:yanchaun0970@gmail.com", zh: "5.有任何問題請聯絡網管。Email:yanchaun0970@gmail.com" }
+    "關於預約系統": { en: "About the Reservation System", zh: "關於預約系統" },
+    "預約方式為即按即預約。": { en: "1.The reservation method is instant reservation.", zh: "1.預約方式為即按即預約。" },
+    "每次預約為半個小時，預約成功後會有信件通知，取消亦然。": { en: "2.Each reservation is for half an hour, and you will receive an email notification after a successful reservation, and the same for cancellation.", zh: "2.每次預約為半個小時，預約成功後會有信件通知，取消亦然。" },
+    "每人每周不得預約超過七小時，違規者系統將自動取消。": { en: "3.Each person is not allowed to reserve more than seven hours per week. Violators will be automatically canceled by the system.", zh: "3.每人每周不得預約超過七小時，違規者系統將自動取消。" },
+    "為達使用琴房效率最大化，預約後若無法到場請記得取消預約": { en: "4.To maximize the efficiency of using the piano room, please remember to cancel your reservation if you cannot attend.", zh: "4.為達使用琴房效率最大化，預約後若無法到場請記得取消預約" },
+
+    "關於琴房": { en: "About the Piano Room", zh: "關於琴房" },
+    "開完琴房後鑰匙請記得掛回社窩，並鎖上門。": { en: "1.After unlocking the piano room, please remember to hang the key back in the club room and lock the door.", zh: "1.開完琴房後鑰匙請記得掛回社窩，並鎖上門。" },
+    "離開琴房時請記得關燈、鎖門。": { en: "2.When leaving the piano room, please remember to turn off the lights and lock the door.", zh: "2.離開琴房時請記得關燈、鎖門。" },
+    "有任何問題請聯絡網管。": { en: "3.If you have any questions, please contact the network administrator. Email:yanchaun0970@gmail.com", zh: "3.有任何問題請聯絡網管。 Email:yanchaun0970@gmail.com" },
+
+    "Q:如何預約琴房？": { en: "Q1: How to reserve a piano room?", zh: "Q1:如何預約琴房？" },
+    "A:請至預約系統頁面，選擇您想預約的琴房，選擇您想要的日期，點擊想要的時間即可預約。" : { en: "A1: Please go to the reservation system page, select the piano room you want to reserve, select the date you want, and click the time you want to reserve.", zh: "A1:請至預約系統頁面，選擇您想預約的琴房，選擇您想要的日期，點擊想要的時間即可預約。" },
+    "Q:如何取消預約？" : { en: "Q2: How to cancel a reservation?", zh: "Q2:如何取消預約？" },
+    "A:請至預約系統頁面，選擇您預約過的日期，選擇您想取消的預約，點擊取消即可。" : { en: "A2: Please go to the reservation system page, select the date you have reserved, select the reservation you want to cancel, and click cancel.", zh: "A2:請至預約系統頁面，選擇您預約過的日期，選擇您想取消的預約，點擊取消即可。" },
+    "Q:別人會看的到我的預約嗎？" : { en: "Q3: Can others see my reservation?", zh: "Q3:別人會看的到我的預約嗎？" },
+    "A:會，為達交流最大化，此新系統特意新增其功能。" : { en: "A3: Yes, in order to maximize communication, this new system has added this function.", zh: "A3:會，為達交流最大化，此新系統特意新增其功能。" },
+    "Q:我沒有收到預約成功的信件，該怎麼辦？" : { en: "Q4: I did not receive a successful reservation email, what should I do?", zh: "Q4:我沒有收到預約成功的信件，該怎麼辦？" },
+    "A:請聯絡網管更新您的電子信箱。" : { en: "A4: Please contact the network administrator to update your email address.", zh: "A4:請聯絡網管更新您的電子信箱。" },
+    
 };
 
 function initializeTranslations() {
