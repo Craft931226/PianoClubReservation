@@ -177,22 +177,101 @@ function generateTimeSlots(events, targetDate, roomType, userName) {
 }
 
 
+let isProcessing = false; // 全局變量，用於跟蹤是否正在處理請求
+
 function handleTimeSlotClick(date, time, userName, roomType, isOccupied) {
-  if (isOccupied) {
-      alert('該時間段已被預約！');
+    if (isOccupied) {
+        alert('該時間段已被預約！');
+        return;
+    }
+
+    // 如果正在處理，阻止新的點擊事件
+    if (isProcessing) {
+        console.warn("正在處理請求，請稍後再試...");
+        return;
+    }
+
+    // 標記正在處理中
+    isProcessing = true;
+
+    // 禁用所有時間段按鈕
+    const timeSlotButtons = document.querySelectorAll('.time-slot');
+    timeSlotButtons.forEach(button => {
+        button.setAttribute('disabled', true);
+        button.style.cursor = 'not-allowed'; // 更新游標樣式
+        button.style.opacity = '0.5'; // 顯示禁用狀態
+    });
+
+    const duration = 30; // 預設使用時間為 30 分鐘
+    const payload = {
+        date: date,
+        start_time: time,
+        user_name: userName,
+        room_type: roomType,
+        duration: duration
+    };
+
+    console.log("發送的參數:", payload);
+
+    fetch('/create-calendar-event/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken // 添加 CSRF Token
+        },
+        body: JSON.stringify(payload),
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // 成功後更新時間段
+                fetch(`/get-calendar-events/?date=${date}&roomType=${encodeURIComponent(roomType)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            console.error("更新時間表失敗:", data.error);
+                            return;
+                        }
+
+                        const updatedTimeSlots = generateTimeSlots(data.events, date, roomType, userName);
+                        const dialog = document.getElementById("myDialog");
+                        dialog.querySelector('.time-slots').innerHTML = updatedTimeSlots;
+                    })
+                    .catch(error => {
+                        console.error('更新時間表時發生錯誤:', error);
+                    });
+            } else {
+                alert('預約失敗：' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('發生錯誤:', error);
+            alert('預約失敗，請稍後再試。');
+        })
+        .finally(() => {
+            // 恢復按鈕的可用性
+            isProcessing = false; // 清除處理狀態
+            timeSlotButtons.forEach(button => {
+                button.removeAttribute('disabled');
+                button.style.cursor = 'pointer';
+                button.style.opacity = '1';
+            });
+        });
+}
+
+
+function cancelReservationByTime(date, time, roomType, userName) {
+  if (!confirm('確定要取消這個預約嗎？')) {
+      return;
+  }
+  // 如果正在處理，阻止新的點擊事件
+  if (isProcessing) {
+      console.warn("正在處理請求，請稍後再試...");
       return;
   }
 
-  const duration = 30; // 預設使用時間為 30 分鐘
-  const payload = {
-      date: date,
-      start_time: time,
-      user_name: userName,
-      room_type: roomType,
-      duration: duration
-  };
-
-  console.log("發送的參數:", payload);
+  // 標記正在處理中
+  isProcessing = true;
 
   // 禁用所有時間段按鈕
   const timeSlotButtons = document.querySelectorAll('.time-slot');
@@ -201,58 +280,6 @@ function handleTimeSlotClick(date, time, userName, roomType, isOccupied) {
       button.style.cursor = 'not-allowed'; // 更新游標樣式
       button.style.opacity = '0.5'; // 顯示禁用狀態
   });
-
-  fetch('/create-calendar-event/', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': csrfToken // 添加 CSRF Token
-      },
-      body: JSON.stringify(payload),
-  })
-      .then(response => response.json())
-      .then(data => {
-          if (data.success) {
-              // alert('預約成功！');
-
-              // 更新時間段
-              fetch(`/get-calendar-events/?date=${date}&roomType=${encodeURIComponent(roomType)}`)
-                  .then(response => response.json())
-                  .then(data => {
-                      if (data.error) {
-                          console.error("更新時間表失敗:", data.error);
-                          return;
-                      }
-
-                      const updatedTimeSlots = generateTimeSlots(data.events, date, roomType, userName);
-                      const dialog = document.getElementById("myDialog");
-                      dialog.querySelector('.time-slots').innerHTML = updatedTimeSlots;
-                  })
-                  .catch(error => {
-                      console.error('更新時間表時發生錯誤:', error);
-                  });
-          } else {
-              alert('預約失敗：' + data.error);
-          }
-      })
-      .catch(error => {
-          console.error('發生錯誤:', error);
-          alert('預約失敗，請稍後再試。');
-      })
-      .finally(() => {
-          // 恢復所有時間段按鈕的可用性
-          timeSlotButtons.forEach(button => {
-              button.removeAttribute('disabled');
-              button.style.cursor = 'pointer';
-              button.style.opacity = '1';
-          });
-      });
-}
-
-function cancelReservationByTime(date, time, roomType, userName) {
-  if (!confirm('確定要取消這個預約嗎？')) {
-      return;
-  }
   const dialog = document.getElementById("myDialog");
   const updatedDate = dialog.getAttribute('data-date'); // 確保從對話框屬性獲取日期
 
@@ -261,13 +288,7 @@ function cancelReservationByTime(date, time, roomType, userName) {
       return;
   }
 
-  // 禁用所有時間段按鈕
-  const timeSlotButtons = document.querySelectorAll('.time-slot');
-  timeSlotButtons.forEach(button => {
-      button.setAttribute('disabled', true);
-      button.style.cursor = 'not-allowed'; // 更新游標樣式
-      button.style.opacity = '0.5'; // 顯示禁用狀態
-  });
+  
   const url = `/cancel-calendar-event-by-time/?date=${encodeURIComponent(date)}&start_time=${encodeURIComponent(time)}&roomType=${encodeURIComponent(roomType)}&user_name=${encodeURIComponent(userName)}`;
 
   fetch(url, {
@@ -301,6 +322,7 @@ function cancelReservationByTime(date, time, roomType, userName) {
       })
       .finally(() => {
         // 恢復所有時間段按鈕的可用性
+        isProcessing = false; // 清除處理狀態
         timeSlotButtons.forEach(button => {
             button.removeAttribute('disabled');
             button.style.cursor = 'pointer';
