@@ -18,4 +18,5 @@ venv/
 # 排除 collectstatic 生成的目錄
 /staticfiles/
 
+token.pickle
 

@@ -13,17 +13,15 @@ from httplib2 import Credentials
 SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
 
 def get_gmail_service():
-    # 從環境變量讀取憑證
-    client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
-    if not client_secret:
-        raise Exception("環境變量 GOOGLE_CLIENT_SECRET 未設置")
+    # 檢查憑證文件
+    token_path = os.getenv("GOOGLE_CREDENTIALS_PATH", "token.json")  # 默認讀取 token.json
+    if not os.path.exists(token_path):
+        raise FileNotFoundError(f"憑證文件未找到：{token_path}")
 
-    creds_data = json.loads(client_secret)
+    # 使用已授權的憑證文件初始化 Gmail API 服務
+    creds = Credentials.from_authorized_user_file(token_path, SCOPES)
 
-    # 在 Render 中，無法使用本地服務器授權，因此需要使用已授權的憑證
-    creds = Credentials.from_authorized_user_info(creds_data, SCOPES)
-
-    # 創建 Gmail API 服務
+    # 創建 Gmail API 服務對象
     service = build("gmail", "v1", credentials=creds)
     return service
 
