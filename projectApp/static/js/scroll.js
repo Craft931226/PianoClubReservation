@@ -9,9 +9,13 @@ const translations = {
     "歡迎": { en: "Welcome,", zh: "歡迎，" },
     "歡迎來到琴房預約系統": { en: "Welcome to the Piano Room Reservation System", zh: "歡迎來到琴房預約系統" },
     "大琴房" : { en: "Large Piano room", zh: "大琴房"},
+    "Large Piano room" : { en: "Large Piano room", zh: "大琴房"},
     "中琴房" : { en: "Medium Piano room", zh: "中琴房"},
+    "Medium Piano room" : { en: "Medium Piano room", zh: "中琴房"},
     "小琴房" : { en: "Small Piano room", zh: "小琴房"},
+    "Small Piano room" : { en: "Small Piano room", zh: "小琴房"},
     "社窩" : { en: "Club room", zh: "社窩"},
+    "Club room" : { en: "Club room", zh: "社窩"},
     "若您是第一次使用，請閱讀以下注意事項": { en: "If this is your first time, please read the following precautions", zh: "若您是第一次使用，請閱讀以下注意事項" },
     "中央鋼琴社預約系統": { en: "National Central University Piano Society Reservation System", zh: "中央鋼琴社預約系統" },
     "關於預約系統": { en: "About the Reservation System", zh: "關於預約系統" },
@@ -23,7 +27,7 @@ const translations = {
     "關於琴房": { en: "About the Piano Room", zh: "關於琴房" },
     "開完琴房後鑰匙請記得掛回社窩，並鎖上門。": { en: "1.After unlocking the piano room, please remember to hang the key back in the club room and lock the door.", zh: "1.開完琴房後鑰匙請記得掛回社窩，並鎖上門。" },
     "離開琴房時請記得關燈、鎖門。": { en: "2.When leaving the piano room, please remember to turn off the lights and lock the door.", zh: "2.離開琴房時請記得關燈、鎖門。" },
-    "有任何問題請聯絡網管。": { en: "3.If you have any questions, please contact the network administrator. Email:yanchaun0970@gmail.com", zh: "3.有任何問題請聯絡網管。 Email:yanchaun0970@gmail.com" },
+    "有任何問題或建議請聯絡網管。": { en: "3.If you have any questions or suggestions, please contact the network administrator. Email: yanchaun0970@gmail.com", zh: "3.有任何問題或建議請聯絡網管。 Email: yanchaun0970@gmail.com" },
 
     "Q:如何預約琴房？": { en: "Q1: How to reserve a piano room?", zh: "Q1:如何預約琴房？" },
     "A:請至預約系統頁面，選擇您想預約的琴房，選擇您想要的日期，點擊想要的時間即可預約。" : { en: "A1: Please go to the reservation system page, select the piano room you want to reserve, select the date you want, and click the time you want to reserve.", zh: "A1:請至預約系統頁面，選擇您想預約的琴房，選擇您想要的日期，點擊想要的時間即可預約。" },
@@ -71,8 +75,12 @@ function closeLoadingDialog() {
 function openDialog(event) {
   const button = event.currentTarget;
   const date = button.getAttribute('data-date');
-  const roomType = button.closest('.button-container').previousElementSibling.textContent.trim(); // 獲取琴房類型
-
+  // 翻譯房間類型
+  let roomType = button.closest('.button-container').previousElementSibling.textContent.trim();
+  if (translations[roomType] && translations[roomType]['zh']) {
+      roomType = translations[roomType]['zh']; // 確保傳遞中文名稱到後端
+  }
+  // console.log(roomType);
   const dialog = document.getElementById("myDialog");
   dialog.setAttribute('data-date', date); // 設定對話框屬性 date
 
