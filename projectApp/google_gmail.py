@@ -7,7 +7,7 @@ import pickle
 from email.mime.text import MIMEText
 import base64
 from googleapiclient.errors import HttpError
-from httplib2 import Credentials
+from google.oauth2.credentials import Credentials
 
 # 憑證範圍
 SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
@@ -100,7 +100,11 @@ def send_email(name, time, room_type, recipient_email):
         body = {"raw": raw}
 
         # 發送郵件
-        service = get_gmail_service()
+        try:
+            service = get_gmail_service()
+            print("Gmail API 初始化成功！")
+        except Exception as e:
+            print("Gmail API 初始化失敗：", e)
         messages = service.users().messages()
         message = messages.send(userId="me", body=body).execute()
         print("郵件已成功發送，ID：", message["id"])
@@ -110,9 +114,9 @@ def send_email(name, time, room_type, recipient_email):
         return None
 
 # 測試發送郵件
-# send_email(
-#     name="周訓練",
-#     time="2025-01-26 10:00",
-#     room_type="大琴房",
-#     recipient_email="yanchaun0970@gmail.com"
-# )
+send_email(
+    name="周訓練",
+    time="2025-01-26 10:00",
+    room_type="大琴房",
+    recipient_email="yanchaun0970@gmail.com"
+)
