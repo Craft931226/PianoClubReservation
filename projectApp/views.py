@@ -3,7 +3,9 @@ import json
 from zoneinfo import ZoneInfo
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from .google_sheets import read_data, update_data
+
+from projectApp.google_gmail import send_email
+from .google_sheets import get_user_email, read_data, update_data
 from django.core.signing import Signer, BadSignature
 from django.http import JsonResponse
 from .google_calendar import create_event, get_events_for_date, create_event, service
@@ -11,9 +13,9 @@ from .google_calendar import create_event, get_events_for_date, create_event, se
 signer = Signer()  # 簽名工具
 # 試算表的範圍，包含用戶數據
 GOOGLE_SHEET_RANGE = '社員資料!A2:C'  # 假設試算表有 Name 和 Student ID 列
-RESERVATION_LIMIT_RANGE = '預約上限!A2:B'  # 假設試算表有 Name 和 Limit 列
+RESERVATION_LIMIT_RANGE = '預約上限!A1:B'  # 假設試算表有 Name 和 Limit 列
 
-def second_page(request):
+def login_view(request):
     error_message = None
 
     if request.method == 'POST':
@@ -151,7 +153,7 @@ def create_calendar_event_view(request):
             # 檢查使用者是否超過預約次數上限
             reservation_data = read_data(RESERVATION_LIMIT_RANGE)
             user_found = False
-
+            # print(reservation_data)
             for index, row in enumerate(reservation_data):
                 if len(row) >= 2 and row[0] == user_name:  # 比對使用者名稱
                     user_found = True
@@ -161,7 +163,7 @@ def create_calendar_event_view(request):
 
                     # 更新次數 +1
                     reservation_data[index][1] = current_count + 1
-                    range_to_update = f'預約上限!B{index + 2}'  # 假設第二列為預約次數
+                    range_to_update = f'預約上限!B{index + 1}'  # 假設第二列為預約次數
                     update_data(range_to_update, [[current_count + 1]])
                     break
 
@@ -177,6 +179,13 @@ def create_calendar_event_view(request):
                 duration=duration
             )
             print("創建成功:", created_event)
+            
+            recipient_email = get_user_email(user_name)
+            full_time = f"{date} {start_time}"
+            send_result = send_email(user_name, full_time, room_type, recipient_email)
+            if "error" in send_result:
+                print("郵件發送錯誤：", send_result["error"])
+
             return JsonResponse({'success': True, 'event': created_event})
         except Exception as e:
             print("創建事件失敗:", str(e))  # 打印錯誤訊息
@@ -246,7 +255,7 @@ def cancel_calendar_event_by_time(request):
                     current_count = int(row[1]) if row[1].isdigit() else 0
                     if current_count > 0:
                         reservation_data[index][1] = current_count - 1
-                        range_to_update = f'預約上限!B{index + 2}'  # 假設第二列為預約次數
+                        range_to_update = f'預約上限!B{index + 1}'  # 假設第二列為預約次數
                         update_data(range_to_update, [[current_count - 1]])
                     break
 

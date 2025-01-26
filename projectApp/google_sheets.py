@@ -54,6 +54,22 @@ def update_data(range_name, values):
     except Exception as e:
         print(f"Error updating data: {e}")
 
+def get_user_email(user_name):
+    """
+    根據使用者名稱從試算表中獲取信箱地址。
+    :param user_name: 使用者名稱
+    :return: 信箱地址 (如果找到)
+    """
+    try:
+        # 讀取社員資料表的所有數據
+        sheet_data = read_data(f'{FORM_RESPONSES_SHEET}!A1:D')  # 假設信箱在第四列
+        for row in sheet_data:
+            if len(row) >= 4 and row[0] == user_name:  # 確保行數據足夠長並匹配使用者名稱
+                return row[3]  # 返回第四列（信箱）
+        return None  # 如果未找到對應使用者
+    except Exception as e:
+        print(f"Error retrieving email for user {user_name}: {e}")
+        return None
 
 # 測試讀取數據
 print(read_data(f'{FORM_RESPONSES_SHEET}!A1:B5'))  # 測試讀取表單回應的前 5 行

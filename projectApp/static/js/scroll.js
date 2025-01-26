@@ -135,7 +135,7 @@ function generateTimeSlots(events, targetDate, roomType, userName) {
                 </button>
             `;
            }
-           occupiedMessage = `(已被<i>${reserverName}</i>預約)`; // 顯示預約者姓名
+           occupiedMessage = `(已被<i>${reserverName}</i> 預約)`; // 顯示預約者姓名
         }
 
       // 每個時間段單獨用 <div> 包裹，實現一行一個時間
@@ -338,9 +338,9 @@ function calculateWeekDates() {
   const dayOfWeek = today.getDay(); // 今天是星期幾 (0: 星期日, 1: 星期一, ...)
   const startOfWeek = new Date(today); // 複製當前日期
 
-  const offset = (dayOfWeek + 1) % 7; // 從今天向前偏移到最近的星期六
-  startOfWeek.setDate(today.getDate() - offset); // 設定為當週星期六
-  // startOfWeek.setDate(today.getDate() - dayOfWeek); // 設定為當週星期日
+  // const offset = (dayOfWeek + 1) % 7; // 從今天向前偏移到最近的星期六
+  // startOfWeek.setDate(today.getDate() - offset); // 設定為當週星期六
+  startOfWeek.setDate(today.getDate() - dayOfWeek); // 設定為當週星期日
 
   // 生成當週 7 天的日期
   const weekDates = [];
