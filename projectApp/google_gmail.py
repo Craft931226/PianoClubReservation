@@ -13,19 +13,22 @@ from google.oauth2.credentials import Credentials
 SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
 
 def get_gmail_service():
-    # 從環境變量讀取憑證
-    client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
-    if not client_secret:
-        raise Exception("環境變量 GOOGLE_CLIENT_SECRET 未設置")
+    try:
+        client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
+        if not client_secret:
+            raise Exception("環境變量 GOOGLE_CLIENT_SECRET 未設置")
 
-    creds_data = json.loads(client_secret)
+        # 將 JSON 字符串轉換為字典
+        creds_data = json.loads(client_secret)
 
-    # 在 Render 中，無法使用本地服務器授權，因此需要使用已授權的憑證
-    creds = Credentials.from_authorized_user_info(creds_data, SCOPES)
+        # 創建憑證對象
+        creds = Credentials.from_authorized_user_info(creds_data, SCOPES)
 
-    # 創建 Gmail API 服務
-    service = build("gmail", "v1", credentials=creds)
-    return service
+        # 初始化 Gmail API 服務
+        return build("gmail", "v1", credentials=creds)
+    except Exception as e:
+        print(f"Gmail API 初始化失敗: {e}")
+        return None  # 返回 None 表示初始化失敗
 
 # def get_gmail_service():
 #     """
@@ -67,6 +70,9 @@ def send_email(name, time, room_type, recipient_email):
     :return: 發送結果
     """
     try:
+        service = get_gmail_service()
+        if not service:
+            raise Exception("Gmail API 初始化失敗")
         # 構建郵件內容
         subject = "您的琴房預約通知 | Your Piano Room Reservation Confirmation"
         body = f"""
@@ -99,17 +105,11 @@ def send_email(name, time, room_type, recipient_email):
         raw = base64.urlsafe_b64encode(message.as_bytes()).decode()
         body = {"raw": raw}
 
-        # 發送郵件
-        try:
-            service = get_gmail_service()
-            print("Gmail API 初始化成功！")
-        except Exception as e:
-            print("Gmail API 初始化失敗：", e)
         messages = service.users().messages()
         message = messages.send(userId="me", body=body).execute()
         print("郵件已成功發送，ID：", message["id"])
         return message
-    except HttpError as error:
+    except Exception as error:
         print("郵件發送失敗: %s" % error)
         return None
 
