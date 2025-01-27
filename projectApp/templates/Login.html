@@ -22,11 +22,12 @@
                 <label for="password">密碼(第一次登入會是學號)</label>
                 <input type="password" id="student_id" name="student_id" placeholder="輸入您的密碼" required>
             </div>
+            {% if error_message %}
+            <p style="color:red;">{{ error_message }}<br>忘記密碼請聯繫網管。<br>Forget password?<br>Please contact the the network administrator.</p>
+            {% endif %} 
             <button type="submit" class="login-btn">登入</button>
         </form>
     </div>
-    {% if error_message %}
-        <p style="color:red;">{{ error_message }}<br>忘記密碼請聯繫網管</p>
-    {% endif %}
+    
 </body>
 </html>

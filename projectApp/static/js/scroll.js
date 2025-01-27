@@ -37,6 +37,8 @@ const translations = {
     "A:會，為達交流最大化，此新系統特意新增其功能。" : { en: "A3: Yes, in order to maximize communication, this new system has added this function.", zh: "A3:會，為達交流最大化，此新系統特意新增其功能。" },
     "Q:我沒有收到預約成功的信件，該怎麼辦？" : { en: "Q4: I did not receive a successful reservation email, what should I do?", zh: "Q4:我沒有收到預約成功的信件，該怎麼辦？" },
     "A:請聯絡網管更新您的電子信箱。" : { en: "A4: Please contact the network administrator to update your email address.", zh: "A4:請聯絡網管更新您的電子信箱。" },
+    "Q:如何修改密碼？" : { en: "Q5: How to change password?", zh: "Q5:如何修改密碼？" },
+    "A:請至功能頁面，點擊更改密碼。" : { en: "A5: Please go to the function page and click change password.", zh: "A5:請至功能頁面，點擊更改密碼。" },
     
 };
 
