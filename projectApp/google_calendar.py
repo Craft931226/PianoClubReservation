@@ -4,17 +4,17 @@ from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from datetime import datetime, timedelta
 
-# # 配置 Google Calendar API 憑證
-# SCOPES = ['https://www.googleapis.com/auth/calendar']
-# credentials_info = json.loads(os.getenv('GOOGLE_CREDENTIALS_JSON'))
-# credentials = Credentials.from_service_account_info(credentials_info, scopes=SCOPES)
-# service = build('calendar', 'v3', credentials=credentials)
-
-# 本地憑證文件的路徑
+# 配置 Google Calendar API 憑證
 SCOPES = ['https://www.googleapis.com/auth/calendar']
-SERVICE_ACCOUNT_FILE = r"C:\Users\User\Downloads\skilled-script-448314-j0-0c05f20ca146.json"
-credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+credentials_info = json.loads(os.getenv('GOOGLE_CREDENTIALS_JSON'))
+credentials = Credentials.from_service_account_info(credentials_info, scopes=SCOPES)
 service = build('calendar', 'v3', credentials=credentials)
+
+# # 本地憑證文件的路徑
+# SCOPES = ['https://www.googleapis.com/auth/calendar']
+# SERVICE_ACCOUNT_FILE = r"C:\Users\User\Downloads\skilled-script-448314-j0-0c05f20ca146.json"
+# credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+# service = build('calendar', 'v3', credentials=credentials)
 
 # 獲取指定日期的事件
 def get_events_for_date(calendar_ids, date):

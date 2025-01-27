@@ -12,53 +12,53 @@ from google.oauth2.credentials import Credentials
 # 憑證範圍
 SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
 
-# def get_gmail_service():
-#     try:
-#         client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
-#         if not client_secret:
-#             raise Exception("環境變量 GOOGLE_CLIENT_SECRET 未設置")
-
-#         # 將 JSON 字符串轉換為字典
-#         creds_data = json.loads(client_secret)
-
-#         # 創建憑證對象
-#         creds = Credentials.from_authorized_user_info(creds_data, SCOPES)
-
-#         # 初始化 Gmail API 服務
-#         return build("gmail", "v1", credentials=creds)
-#     except Exception as e:
-#         print(f"Gmail API 初始化失敗: {e}")
-#         return None  # 返回 None 表示初始化失敗
-
 def get_gmail_service():
-    """
-    初始化 Gmail API 服務。
-    如果 token.pickle 存在，則加載憑證；否則進行用戶驗證並保存憑證。
-    :return: Gmail API 服務對象
-    """
-    creds = None
-    # 檢查本地是否有保存的 token
-    if os.path.exists("token.pickle"):
-        with open("token.pickle", "rb") as token:
-            creds = pickle.load(token)
+    try:
+        client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
+        if not client_secret:
+            raise Exception("環境變量 GOOGLE_CLIENT_SECRET 未設置")
 
-    # 如果沒有可用的憑證，或憑證已失效，重新進行驗證
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                r"C:\Users\User\Downloads\client_secret_921569073879-o790mqkieupt27bg4902a6mji6hbcgi8.apps.googleusercontent.com.json", SCOPES
-            )
-            creds = flow.run_local_server(port=0)
+        # 將 JSON 字符串轉換為字典
+        creds_data = json.loads(client_secret)
 
-        # 保存憑證到本地
-        with open("token.pickle", "wb") as token:
-            pickle.dump(creds, token)
+        # 創建憑證對象
+        creds = Credentials.from_authorized_user_info(creds_data, SCOPES)
 
-    # 初始化 Gmail API 服務
-    service = build("gmail", "v1", credentials=creds)
-    return service
+        # 初始化 Gmail API 服務
+        return build("gmail", "v1", credentials=creds)
+    except Exception as e:
+        print(f"Gmail API 初始化失敗: {e}")
+        return None  # 返回 None 表示初始化失敗
+
+# def get_gmail_service():
+#     """
+#     初始化 Gmail API 服務。
+#     如果 token.pickle 存在，則加載憑證；否則進行用戶驗證並保存憑證。
+#     :return: Gmail API 服務對象
+#     """
+#     creds = None
+#     # 檢查本地是否有保存的 token
+#     if os.path.exists("token.pickle"):
+#         with open("token.pickle", "rb") as token:
+#             creds = pickle.load(token)
+
+#     # 如果沒有可用的憑證，或憑證已失效，重新進行驗證
+#     if not creds or not creds.valid:
+#         if creds and creds.expired and creds.refresh_token:
+#             creds.refresh(Request())
+#         else:
+#             flow = InstalledAppFlow.from_client_secrets_file(
+#                 r"C:\Users\User\Downloads\client_secret_921569073879-o790mqkieupt27bg4902a6mji6hbcgi8.apps.googleusercontent.com.json", SCOPES
+#             )
+#             creds = flow.run_local_server(port=0)
+
+#         # 保存憑證到本地
+#         with open("token.pickle", "wb") as token:
+#             pickle.dump(creds, token)
+
+#     # 初始化 Gmail API 服務
+#     service = build("gmail", "v1", credentials=creds)
+#     return service
 
 def send_email(name, time, room_type, recipient_email):
     """
