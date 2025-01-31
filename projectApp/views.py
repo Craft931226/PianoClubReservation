@@ -21,7 +21,10 @@ def login_view(request):
     if request.method == 'POST':
         name = request.POST.get('name')
         student_id = request.POST.get('student_id')
-
+        print("--------------------這裡可以看到誰登入了系統：")
+        time = datetime.now()
+        print(f'{time} {name} 登入了系統')
+        print()
         try:
             users = read_data(GOOGLE_SHEET_RANGE)  # 獲取用戶數據
             if not users:
@@ -106,7 +109,11 @@ def get_calendar_events_view(request):
     if request.method == 'GET':
         date = request.GET.get('date')  # ISO 格式的日期
         room_type = request.GET.get('roomType')  # 獲取琴房類型
-        print(f"日期: {date}, 琴房類型: {room_type}")
+        name = request.GET.get('user_name')  # 獲取用戶名
+        print()
+        print("--------------------這裡可以看到使用者點擊哪天哪個琴房：")
+        print("函式名稱：get_calendar_events_view")
+        print(f"日期: {date}, 琴房類型: {room_type}, 使用者: {name}")
 
         if not date or not room_type:
             return JsonResponse({'error': 'Missing parameters'}, status=400)
@@ -125,7 +132,13 @@ def get_calendar_events_view(request):
 
         # 獲取指定日曆的事件
         events = get_events_for_date([calendar_id], date)
-        print(events)
+        print("當天預約情況：")
+        if not events:
+            print("無預約事件")
+        events_num = 1
+        for event in events:
+            print(f"{events_num} 標題：{event['summary']} 開始時間：{event['start']}")
+            events_num += 1
         return JsonResponse({'events': events}, status=200)
     else:
         return JsonResponse({'error': 'Method not allowed'}, status=405)
@@ -141,20 +154,26 @@ def calculate_time_range(date, start_time):
     time_max = (start_datetime + timedelta(minutes=30)).isoformat()
     
     return time_min, time_max
+
 def create_calendar_event_view(request):
+    """
+    創建日曆事件的視圖。
+    """
+    # 接受 POST 請求
     if request.method == 'POST':
         try:
-            data = json.loads(request.body)
-            print("接收到的數據:", data)
+            data = json.loads(request.body)  # 解析 JSON 數據
+            # print("接收到的數據:", data)
 
             date = data.get('date')
             start_time = data.get('start_time')
             user_name = data.get('user_name')
             room_type = data.get('room_type')
             duration = int(data.get('duration', 30))
-
-            print(f"準備創建事件: 日期={date}, 時間={start_time}, 使用者={user_name}, 琴房={room_type}, 時長={duration}分鐘")
-
+            print()
+            print("--------------------這裡可以看到使用者要預約的琴房：")
+            print("函式名稱：create_calendar_event_view")
+            print(f"準備創建日曆事件: 日期={date}, 時間={start_time}, 使用者={user_name}, 琴房={room_type}, 時長={duration}分鐘")
             # 檢查使用者是否超過預約次數上限
             reservation_data = read_data(RESERVATION_LIMIT_RANGE)
             user_found = False
@@ -164,6 +183,7 @@ def create_calendar_event_view(request):
                     user_found = True
                     current_count = int(row[1]) if row[1].isdigit() else 0
                     if current_count >= 14:
+                        print(f"{user_name} 已達到每周預約上限（14次）")
                         return JsonResponse({'success': False, 'error': '您已達到每周預約上限（14次）。'})
 
                     # 更新次數 +1
@@ -183,11 +203,16 @@ def create_calendar_event_view(request):
                 room_type=room_type,
                 duration=duration
             )
-            print("創建成功:", created_event)
+            # print("創建成功:", created_event) # 這邊可以看到創建成功的事件所有屬性
+            print("創建成功", created_event['summary'], "開始時間:", created_event['start']['dateTime'])
 
+            # 發送郵件通知
             recipient_email = get_user_email(user_name)
             full_time = f"{date} {start_time}"
             send_result = send_email(user_name, full_time, room_type, recipient_email)
+            print()
+            print()
+
             if "error" in send_result:
                 print("郵件發送錯誤：", send_result["error"])
 
@@ -222,7 +247,9 @@ def cancel_calendar_event_by_time(request):
 
             # 計算完整的開始時間
             time_min, time_max = calculate_time_range(date, start_time)
-            print(f"使用的日曆 ID: {calendar_id}, timeMin: {time_min}, timeMax: {time_max}")
+            print()
+            print("--------------------這裡可以看到使用者取消哪個琴房：")
+            print(f"使用的日曆 ID: {calendar_id}, 目標timeMin: {time_min}, 目標timeMax: {time_max}")
 
             # 獲取當日所有事件
             events_result = service.events().list(
@@ -232,14 +259,14 @@ def cancel_calendar_event_by_time(request):
                 singleEvents=True,
                 orderBy='startTime'
             ).execute()
-
-            print("查詢到的事件:", events_result)
+            # print("獲取的事件:", events_result) # 這邊可以看到獲取的事件所有屬性
+            print(f"獲取的事件：\n - 標題：{events_result['summary']}\n - 開始時間：{events_result['items'][0]['start']['dateTime']}")
 
             # 查找對應的事件
             events = events_result.get('items', [])
             target_event = None
             for event in events:
-                print(f"檢查事件: {event}")
+                print(f"檢查事件：\n - 標題：{events_result['summary']}\n - 開始時間：{events_result['items'][0]['start']['dateTime']}")
                 if user_name in event.get('summary', ''):  # 確認事件是否屬於該用戶
                     target_event = event
                     break
@@ -268,6 +295,8 @@ def cancel_calendar_event_by_time(request):
             send_result = send_cancel_email(user_name, full_time, room_type, recipient_email)
             if "error" in send_result:
                 print("郵件發送錯誤：", send_result["error"])
+            print()
+            print()
             if not user_found:
                 return JsonResponse({'success': False, 'error': '使用者未找到，請聯繫管理員。'})
             return JsonResponse({'success': True, 'message': '預約已取消'})
@@ -289,6 +318,7 @@ def reset_limits_if_needed():
     """
     如果預約次數尚未重置，檢查是否需要執行重置操作。
     """
+    print("--------------------檢查是否需要重置預約次數")
     try:
         # 檢查試算表中的上次重置日期
         status_range = '系統狀態!A1:B1'
@@ -307,16 +337,5 @@ def reset_limits_if_needed():
             print(f"不需要重置，最後重置日期為: {last_reset_date}")
     except Exception as e:
         print(f"重置檢查過程中出錯: {e}")
+    print()
 
-# # 測試創建事件
-# try:
-#     created_event = create_event(
-#         date="2025-01-24",
-#         start_time="14:00",
-#         user_name="周訓練",
-#         room_type="大琴房",
-#         duration=60
-#     )
-#     print("創建成功:", created_event)
-# except Exception as e:
-#     print("創建事件失敗:", e)

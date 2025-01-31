@@ -106,4 +106,6 @@ def reset_reservation_limits():
         print(f"重置預約次數失敗：{e}")
 
 # 測試讀取數據
-print(read_data(f'{FORM_RESPONSES_SHEET}!A1:B5'))  # 測試讀取表單回應的前 5 行
+print("這裡確保Sheets能夠成功讀取數據")
+print(read_data(f'{FORM_RESPONSES_SHEET}!A1:B1'))  # 測試讀取表單回應的前 1 行
+print()

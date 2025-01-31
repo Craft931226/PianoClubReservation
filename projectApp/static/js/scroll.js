@@ -89,7 +89,7 @@ function openDialog(event) {
   openLoadingDialog(); // 顯示加載對話框
 
   // 獲取事件並更新對話框
-  fetch(`/get-calendar-events/?date=${date}&roomType=${encodeURIComponent(roomType)}`)
+  fetch(`/get-calendar-events/?date=${date}&roomType=${encodeURIComponent(roomType)}&user_name=${currentUsername}`)
       .then(response => response.json())
       .then(data => {
           if (data.error) {
@@ -227,7 +227,7 @@ function handleTimeSlotClick(date, time, userName, roomType, isOccupied) {
         .then(data => {
             if (data.success) {
                 // 成功後更新時間段
-                fetch(`/get-calendar-events/?date=${date}&roomType=${encodeURIComponent(roomType)}`)
+                fetch(`/get-calendar-events/?date=${date}&roomType=${encodeURIComponent(roomType)}&user_name=${userName}`)
                     .then(response => response.json())
                     .then(data => {
                         if (data.error) {
@@ -304,7 +304,7 @@ function cancelReservationByTime(date, time, roomType, userName) {
           if (data.success) {
               // alert('預約已取消！');
               // 更新時間段
-              fetch(`/get-calendar-events/?date=${updatedDate}&roomType=${encodeURIComponent(roomType)}`)
+              fetch(`/get-calendar-events/?date=${updatedDate}&roomType=${encodeURIComponent(roomType)}&user_name=${userName}`)
                   .then(response => response.json())
                   .then(data => {
                       if (data.error) {

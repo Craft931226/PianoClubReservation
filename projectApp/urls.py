@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from .views import home_view, change_password_view, get_calendar_events_view
 
 urlpatterns = [
     path('', views.login_view, name='login'),  # 空路徑對應登入頁面
