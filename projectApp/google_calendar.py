@@ -88,3 +88,5 @@ def create_event(date, start_time, user_name, room_type, duration):
     created_event = service.events().insert(calendarId=calendar_id, body=event).execute()
     print(f"事件已創建，連結: {created_event.get('htmlLink')}")
     return created_event
+
+# cancel 的功能在view.py中

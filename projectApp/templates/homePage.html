@@ -22,11 +22,7 @@
                     </ul>
                 </li>
                 <li>
-                    <a href="#" data-translate="功能">功能</a>
-                    <ul>
-                        <li><a href="{% url 'change_password' %}" data-translate="更改密碼">更改密碼</a></li>
-                        <li><a href="{% url 'login' %}" data-translate="登出">登出</a></li>
-                    </ul>
+                    <a href="{% url 'Profile' %}?username={{ username }}" data-translate="個人">個人</a>
                 </li>
                 <li class="welcome" data-translate="歡迎">歡迎，</li>
                 <li class="name">{{ username }}</li>
@@ -101,28 +97,29 @@
         <section id="notations">
          <h2 data-translate="注意事項">注意事項</h2>
          <h3 data-translate="關於預約系統">關於預約系統</h3>
-          <p data-translate="預約方式為即按即預約。">1.預約方式為即按即預約。</p>
-          <p data-translate="每次預約為半個小時，預約成功後會有信件通知，取消亦然。">2.每次預約為半個小時，預約成功後會有信件通知，取消亦然。</p>
-          <p data-translate="每人每周不得預約超過七小時，違規者系統將自動取消。">3.每人每周不得預約超過七小時，違規者系統將自動取消。</p>
-          <p data-translate="為達使用琴房效率最大化，預約後若無法到場請記得取消預約">4.為達使用琴房效率最大化，預約後若無法到場請記得取消預約</p>
+          <p data-translate="1.預約方式為即按即預約。">1.預約方式為即按即預約。</p>
+          <p data-translate="2.每次預約為半個小時">2.每次預約為半個小時</p>
+          <p data-translate="3.每人每周不得預約超過七小時，違規者系統將自動取消。">3.每人每周不得預約超過七小時，違規者系統將自動取消。</p>
+          <p data-translate="4.每周日00:00才會開放當周可預約的時段">4.每周日00:00才會開放當周可預約的時段</p>
+          <p data-translate="5.為達使用琴房效率最大化，預約後若無法到場請記得取消預約">5.為達使用琴房效率最大化，預約後若無法到場請記得取消預約</p>
          <h3 data-translate="關於琴房">關於琴房</h3>
-          <p data-translate="開完琴房後鑰匙請記得掛回社窩，並鎖上門。">1.開完琴房後鑰匙請記得掛回社窩，並鎖上門。</p>
-          <p data-translate="離開琴房時請記得關燈、鎖門。">2.離開琴房時請記得關燈、鎖門。</p>
-          <p data-translate="有任何問題或建議請聯絡網管。">3.有任何問題或建議請聯絡網管。</p>
+          <p data-translate="1.開完琴房後鑰匙請記得掛回社窩，並鎖上門。">1.開完琴房後鑰匙請記得掛回社窩，並鎖上門。</p>
+          <p data-translate="2.離開琴房時請記得關燈、鎖門。">2.離開琴房時請記得關燈、鎖門。</p>
+          <p data-translate="3.有任何問題或建議請聯絡網管。">3.有任何問題或建議請聯絡網管。</p>
         </section>
 
         <section id="questions">
             <h2 data-translate="常見問題">常見問題</h2>
-            <h3 data-translate="Q:如何預約琴房？">Q1:如何預約琴房？</h3>
-              <p data-translate="A:請至預約系統頁面，選擇您想預約的琴房，選擇您想要的日期，點擊想要的時間即可預約。">&emsp;A1:請至預約系統頁面，選擇您想預約的琴房，選擇您想要的日期，點擊想要的時間即可預約。</p>
-            <h3 data-translate="Q:如何取消預約？">Q2:如何取消預約？</h3>
-              <p data-translate="A:請至預約系統頁面，選擇您預約過的日期，選擇您想取消的預約，點擊取消即可。">&emsp;A2:請至預約系統頁面，選擇您預約過的日期，選擇您想取消的預約，點擊取消即可。</p>
-            <h3 data-translate="Q:別人會看的到我的預約嗎？">Q3:別人會看的到我的預約嗎？</h3>
-              <p data-translate="A:會，為達交流最大化，此新系統特意新增其功能。">&emsp;A3:會，為達交流最大化，此新系統特意新增其功能。</p>
-            <h3 data-translate="Q:我沒有收到預約成功的信件，該怎麼辦？">Q4:我沒有收到預約成功的信件，該怎麼辦？</h3>
-              <p data-translate="A:請聯絡網管更新您的電子信箱。">&emsp;A4:請聯絡網管更新您的電子信箱</p>
-            <h3 data-translate="Q:如何修改密碼？">Q5:如何修改密碼？</h3>
-                <p data-translate="A:請至功能頁面，點擊更改密碼。">&emsp;A5:請至功能頁面，點擊更改密碼。</p>
+            <h3 data-translate="Q1:如何預約琴房？">Q1:如何預約琴房？</h3>
+              <p data-translate="A1:請至預約系統頁面，選擇您想預約的琴房，選擇您想要的日期，點擊想要的時間即可預約。">A1:請至預約系統頁面，選擇您想預約的琴房，選擇您想要的日期，點擊想要的時間即可預約。</p>
+            <h3 data-translate="Q2:如何取消預約？">Q2:如何取消預約？</h3>
+              <p data-translate="A2:請至預約系統頁面，選擇您預約過的日期，選擇您想取消的預約，點擊取消即可。">A2:請至預約系統頁面，選擇您預約過的日期，選擇您想取消的預約，點擊取消即可。</p>
+            <h3 data-translate="Q3:別人會看的到我的預約嗎？">Q3:別人會看的到我的預約嗎？</h3>
+              <p data-translate="A3:會，為達交流最大化，此新系統特意新增其功能。">A3:會，為達交流最大化，此新系統特意新增其功能。</p>
+            <h3 data-translate="Q4:如何修改密碼？">Q4:如何修改密碼？</h3>
+              <p data-translate="A4:請點擊「個人」，點擊「更改密碼」。">A4:請點擊「個人」，點擊「更改密碼」。</p>
+            <h3 data-translate="Q5:如何查看自己的預約？">Q5:如何查看自己的預約？</h3>
+              <p data-translate="A5:請點擊「個人」即可看見預約歷史">A5:請點擊「個人」即可看見預約歷史</p>
         </section>
     </main>
 

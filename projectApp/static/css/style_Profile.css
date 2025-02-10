@@ -1,0 +1,232 @@
+/* 全局樣式 */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+header {
+    background: #333;
+    color: #fff;
+    height: 50px;
+}
+/* 主選單樣式 */
+header nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+header nav ul li {
+    position: relative; /* 確保子選單能正確定位 */
+    margin-right: 0%;
+}
+
+header nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 20px; /* 控制按鈕內部的上下和左右間距 */
+    display: block;
+    height: 100%; /* 讓按鈕填滿 li 元素的高度 */
+    box-sizing: border-box; /* 包括內邊距和邊框計算在內 */
+}
+
+/* 主選單懸停樣式 */
+header nav ul li a:hover {
+    background: #555; /* 改變懸停時的背景色 */
+    color: #ff6347; /* 改變文字顏色 */
+    height: 100%; /* 確保背景色填滿 */
+}
+
+/* 子選單樣式 */
+header nav ul li ul {
+    display: none; /* 預設隱藏 */
+    position: absolute;
+    top: 100%; /* 放置於主選單項的正下方 */
+    left: 0;
+    background-color: #444;
+    padding: 0;
+    list-style: none;
+    border-radius: 5px;
+    min-width: 150px; /* 設置固定寬度 */
+    z-index: 100;
+}
+
+header nav ul li ul li {
+    width: 100%; /* 確保子選單項的寬度與父容器一致 */
+}
+
+header nav ul li ul li a {
+    padding: 10px 20px; /* 確保文字區域左右均勻 */
+    display: block;
+    white-space: nowrap; /* 防止文字換行 */
+
+}
+
+header nav ul li ul li a:hover {
+    background: #555; /* 滑鼠懸停時變色 */
+    color: #ff6347;
+}
+
+/* 顯示子選單 */
+header nav ul li:hover > ul {
+    display: block;
+}
+select {
+    padding: 5px;
+    margin: 10px 70%;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+.inform{
+    text-align: center;
+    color: #4a4a4a;
+    opacity: 0.5;
+}
+/* 個人中心容器 */
+.profile-container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+/* 頭部樣式 */
+.profile-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-header h1 {
+    font-size: 24px;
+    color: #333;
+}
+
+.profile-header p {
+    font-size: 18px;
+    color: #666;
+}
+
+/* 使用者資訊區 */
+.profile-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+/* 頭像樣式 */
+.profile-picture img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+}
+
+/* 使用者詳細資料 */
+.profile-details {
+    flex: 1;
+    padding-left: 20px;
+}
+
+.profile-details p {
+    font-size: 16px;
+    color: #444;
+    margin: 8px 0;
+}
+.show-btn {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #ffffff;
+    color: rgb(55, 55, 55);
+    border: 1.5px solid #383838;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+    text-decoration: none;
+}
+.show-btn:hover {
+    background-color: #303030;
+    color: #ffffff;
+}
+/* 修改密碼按鈕 */
+.change-password-btn {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #ed6c22;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+    text-decoration: none;
+}
+
+.change-password-btn:hover {
+    background-color: #ca5d1e;
+}
+/* 登出 */
+.logout-btn {
+    margin-right: auto;
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #c51e1e;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+    text-decoration: none;
+}
+.logout-btn:hover {
+    background-color: #a51e1e;
+}
+/* 預約紀錄 */
+.reservation-history h2 {
+    text-align: center;
+    color: #333;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+th {
+    background-color: #5aaaff;
+    color: white;
+}
+
+/* td {
+    background-color: #f9f9f9;
+} */
+
+/* 響應式設計 */
+@media (max-width: 600px) {
+    .profile-info {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .profile-picture {
+        margin-bottom: 15px;
+    }
+
+    .profile-details {
+        padding-left: 0;
+    }
+}

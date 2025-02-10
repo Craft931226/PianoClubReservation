@@ -9,10 +9,17 @@ body {
     color: #333;
     
     }
+/* 固定 Header 在頂部 */
 header {
-    background: #333;
-    color: #fff;
-    height: 50px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #333; /* 確保 header 有背景色 */
+    color: white;
+    /* padding: 10px 20px; */
+    z-index: 1000; /* 確保 header 在最上層 */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 添加陰影效果 */
 }
     
 /* 主選單樣式 */
@@ -316,6 +323,7 @@ li.name{
     text-decoration: none;
     border-radius: 5px;
     transition: background 0.3s;
+    cursor: pointer;
 }
 .cancel-button:hover {
     background: #e55342;

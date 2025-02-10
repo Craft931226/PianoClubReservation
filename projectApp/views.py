@@ -4,8 +4,8 @@ from zoneinfo import ZoneInfo
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
-from projectApp.google_gmail import send_cancel_email, send_email
-from .google_sheets import get_user_email, read_data, reset_reservation_limits, update_data
+# from projectApp.google_gmail import send_cancel_email, send_email
+from .google_sheets import cancel_reservation_log, create_reservation_log, get_user_email, read_data, reset_reservation_limits, update_data
 from django.core.signing import Signer, BadSignature
 from django.http import JsonResponse
 from .google_calendar import create_event, get_events_for_date, create_event, service
@@ -13,7 +13,7 @@ from .google_calendar import create_event, get_events_for_date, create_event, se
 signer = Signer()  # 簽名工具
 # 試算表的範圍，包含用戶數據
 GOOGLE_SHEET_RANGE = '社員資料!A2:C'  # 假設試算表有 Name 和 Student ID 列
-RESERVATION_LIMIT_RANGE = '預約上限!A1:B'  # 假設試算表有 Name 和 Limit 列
+RESERVATION_LIMIT_RANGE = '預約上限!A1:P'  # 假設試算表有 Name 和 Limit 列
 
 def login_view(request):
     error_message = None
@@ -23,8 +23,7 @@ def login_view(request):
         student_id = request.POST.get('student_id')
         print("--------------------這裡可以看到誰登入了系統：")
         time = datetime.now()
-        print(f'{time} {name} 登入了系統')
-        print()
+        print(f'{time} {name} 嘗試登入了系統')
         try:
             users = read_data(GOOGLE_SHEET_RANGE)  # 獲取用戶數據
             if not users:
@@ -35,9 +34,12 @@ def login_view(request):
                     if len(user) >= 2 and user[0] == name and user[2] == student_id:
                         user_found = True
                         signed_username = signer.sign(name)  # 生成簽名的用戶名
+                        print(f'{time} {name} 登入成功')
+                        print()
                         return redirect(f'/home/?username={signed_username}')
                 
                 if not user_found:
+                    print(f'{time} {name} 登入失敗')
                     error_message = "帳號或密碼錯誤，請重新輸入。"
         except Exception as e:
             error_message = f"系統錯誤：{e}"
@@ -59,6 +61,78 @@ def home_view(request):
     except BadSignature:
         return redirect('login')  # 簽名無效時重定向到登入頁面
 
+def Profile_view(request):
+    """
+    進入個人資料頁面時，根據 username 從 Google Sheets 讀取密碼，並傳遞給前端
+    """
+    username = request.GET.get('username')  # 從 URL 參數獲取 username
+
+    if not username:
+        return redirect('home')  # 如果沒有提供 username，返回首頁
+    print("--------------------這裡可以看到誰點擊了個人：")
+    print("函式名稱：Profile_view")
+    print(f"使用者: {username}")
+    try:
+        # 社員資料表的範圍，包含用戶數據
+        users = read_data(GOOGLE_SHEET_RANGE)  # 從 Google Sheets 讀取用戶數據
+        if not users:
+            return JsonResponse({'error': '無法讀取用戶數據'}, status=500)
+
+        password = None
+        for user in users:
+            if len(user) >= 3 and user[0] == username:
+                password = user[2]  # 獲取密碼
+                break
+
+        if password is None:
+            return JsonResponse({'error': '未找到該用戶'}, status=404)
+        
+        # 讀取使用者的預約上限
+        reserveLimit = None
+        reservation_data = read_data(RESERVATION_LIMIT_RANGE)
+        reservations = []
+
+        for row in reservation_data:
+            if len(row) >= 2 and row[0] == username:
+                # print(row)
+                reserveLimit = row[1]  # 獲取預約次數
+                reservations = row[2:16]  # 讀取該使用者的預約記錄（最多 14 次）
+                break
+
+        if reserveLimit is None:
+            return JsonResponse({'error': '未找到該用戶的預約上限'}, status=404)
+
+        # 過濾空白預約紀錄，轉換成結構化數據
+        filtered_reservations = []
+        for res in reservations:
+            if res.strip() and res.strip() != "-":
+                date_time, room = res.split(" - ")
+                date_part, time_part = date_time.split()
+                filtered_reservations.append({
+                    "date": date_part,
+                    "time": time_part,
+                    "room": room
+                })
+
+        # 按日期 + 時間排序
+        sorted_reservations = sorted(filtered_reservations, key=lambda x: (x["date"], x["time"]))
+        # print(len(reservations), reservations)
+        # print(len(filtered_reservations), filtered_reservations)
+        # print(len(sorted_reservations),sorted_reservations)
+        num =1
+        for res in sorted_reservations:
+            print(f"{num}. 日期: {res['date']} 時間: {res['time']} 琴房: {res['room']}")
+            num += 1
+        print()
+        return render(request, 'Profile.html', {
+            'username': username,
+            'password': password,
+            'reserveLimit': reserveLimit,
+            'reservations': json.dumps(sorted_reservations)  # 傳遞 JSON 給前端
+        })
+
+    except Exception as e:
+        return JsonResponse({'error': f'系統錯誤：{e}'}, status=500)
 
 
 
@@ -139,6 +213,9 @@ def get_calendar_events_view(request):
         for event in events:
             print(f"{events_num} 標題：{event['summary']} 開始時間：{event['start']}")
             events_num += 1
+        print()
+        print()
+
         return JsonResponse({'events': events}, status=200)
     else:
         return JsonResponse({'error': 'Method not allowed'}, status=405)
@@ -162,7 +239,7 @@ def create_calendar_event_view(request):
     # 接受 POST 請求
     if request.method == 'POST':
         try:
-            data = json.loads(request.body)  # 解析 JSON 數據
+            data = json.loads(request.body)  # 解 析 JSON 數據
             # print("接收到的數據:", data)
 
             date = data.get('date')
@@ -203,18 +280,21 @@ def create_calendar_event_view(request):
                 room_type=room_type,
                 duration=duration
             )
+            # ✅ 記錄事件到 "預約上限" 試算表的第三欄開始
+            event_details = f"{date} {start_time} - {room_type}"
+            create_reservation_log(user_name, event_details)
             # print("創建成功:", created_event) # 這邊可以看到創建成功的事件所有屬性
             print("創建成功", created_event['summary'], "開始時間:", created_event['start']['dateTime'])
 
-            # 發送郵件通知
-            recipient_email = get_user_email(user_name)
-            full_time = f"{date} {start_time}"
-            send_result = send_email(user_name, full_time, room_type, recipient_email)
+            # # 發送郵件通知
+            # recipient_email = get_user_email(user_name)
+            # full_time = f"{date} {start_time}"
+            # send_result = send_email(user_name, full_time, room_type, recipient_email)
             print()
             print()
 
-            if "error" in send_result:
-                print("郵件發送錯誤：", send_result["error"])
+            # if "error" in send_result:
+            #     print("郵件發送錯誤：", send_result["error"])
 
             return JsonResponse({'success': True, 'event': created_event})
         except Exception as e:
@@ -249,7 +329,7 @@ def cancel_calendar_event_by_time(request):
             time_min, time_max = calculate_time_range(date, start_time)
             print()
             print("--------------------這裡可以看到使用者取消哪個琴房：")
-            print(f"使用的日曆 ID: {calendar_id}, 目標timeMin: {time_min}, 目標timeMax: {time_max}")
+            print(f"使用的日曆 ID: {calendar_id}, 目標timeMin: {time_min}, 目標timeMax: {time_max}, 使用者: {user_name}")
 
             # 獲取當日所有事件
             events_result = service.events().list(
@@ -259,6 +339,10 @@ def cancel_calendar_event_by_time(request):
                 singleEvents=True,
                 orderBy='startTime'
             ).execute()
+
+            # 取消事件
+            cancel_reservation_log(user_name, f"{date} {start_time} - {room_type}")
+
             # print("獲取的事件:", events_result) # 這邊可以看到獲取的事件所有屬性
             print(f"獲取的事件：\n - 標題：{events_result['summary']}\n - 開始時間：{events_result['items'][0]['start']['dateTime']}")
 
@@ -290,12 +374,12 @@ def cancel_calendar_event_by_time(request):
                         range_to_update = f'預約上限!B{index + 1}'  # 假設第二列為預約次數
                         update_data(range_to_update, [[current_count - 1]])
                     break
-            recipient_email = get_user_email(user_name)
-            full_time = f"{date} {start_time}"
-            send_result = send_cancel_email(user_name, full_time, room_type, recipient_email)
-            if "error" in send_result:
-                print("郵件發送錯誤：", send_result["error"])
-            print()
+            # #郵件通知
+            # recipient_email = get_user_email(user_name)
+            # full_time = f"{date} {start_time}"
+            # send_result = send_cancel_email(user_name, full_time, room_type, recipient_email)
+            # if "error" in send_result:
+            #     print("郵件發送錯誤：", send_result["error"])
             print()
             if not user_found:
                 return JsonResponse({'success': False, 'error': '使用者未找到，請聯繫管理員。'})
@@ -313,6 +397,14 @@ def get_last_sunday(input_date):
     :return: 該日期所在周的星期天
     """
     return input_date - timedelta(days=input_date.weekday() + 1) if input_date.weekday() != 6 else input_date
+
+def get_last_monday(input_date):
+    """
+    計算指定日期所在周的星期一日期
+    :param input_date: 指定日期
+    :return: 該日期所在周的星期一
+    """
+    return input_date - timedelta(days=input_date.weekday())
 
 def reset_limits_if_needed():
     """

@@ -5,21 +5,21 @@ import os
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 
-# 配置 Google Sheets API 憑證
-SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-# 從環境變數中加載憑證
-credentials_info = json.loads(os.getenv('GOOGLE_CREDENTIALS_JSON'))
-credentials = Credentials.from_service_account_info(credentials_info, scopes=SCOPES)
-SPREADSHEET_ID = os.getenv('GOOGLE_SHEET_ID')  # 修改為實際試算表的 ID
-service = build('sheets', 'v4', credentials=credentials)
-
-
 # # 配置 Google Sheets API 憑證
 # SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-# SERVICE_ACCOUNT_FILE = r"C:\Users\User\Downloads\skilled-script-448314-j0-0c05f20ca146.json"
-# credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+# # 從環境變數中加載憑證
+# credentials_info = json.loads(os.getenv('GOOGLE_CREDENTIALS_JSON'))
+# credentials = Credentials.from_service_account_info(credentials_info, scopes=SCOPES)
+# SPREADSHEET_ID = os.getenv('GOOGLE_SHEET_ID')  # 修改為實際試算表的 ID
 # service = build('sheets', 'v4', credentials=credentials)
-# SPREADSHEET_ID = '1TWp1XNDx46NPLRZQA9AVA1yghVxhA_2TZwwb9c0fIMA'
+
+
+# 配置 Google Sheets API 憑證(本地端)
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+SERVICE_ACCOUNT_FILE = r"C:\Users\User\Downloads\skilled-script-448314-j0-0c05f20ca146.json"
+credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+service = build('sheets', 'v4', credentials=credentials)
+SPREADSHEET_ID = '1TWp1XNDx46NPLRZQA9AVA1yghVxhA_2TZwwb9c0fIMA'
 
 
 # update_user_name 函數將用戶名更新到試算表中
@@ -27,7 +27,7 @@ service = build('sheets', 'v4', credentials=credentials)
 FORM_RESPONSES_SHEET = '社員資料'
 RESERVATION_LIMIT_SHEET = '預約上限'
 FORM_RESPONSES_RANGE = f'{FORM_RESPONSES_SHEET}!A1:B'  # 假設第一列為名稱，第二列為學號
-RESERVATION_LIMIT_RANGE = f'{RESERVATION_LIMIT_SHEET}!A1:B'  # 假設第一列為名稱，第二列為學號
+RESERVATION_LIMIT_RANGE = f'{RESERVATION_LIMIT_SHEET}!A1:P'  # 假設第一列為名稱，第二列為學號
 
 # 讀取數據
 def read_data(range_name):
@@ -75,10 +75,11 @@ def get_user_email(user_name):
 def reset_reservation_limits():
     """
     將預約上限試算表中的 B 欄（預約次數）全部重置為 0。
+    將 C 欄至 P 欄（預約紀錄）重置為 "-"。
     僅當本週未執行過重置操作時執行。
     """
     try:
-        # 檢查是否已經重置過
+        # 檢查是否已經執行過重置
         status_range = '系統狀態!A1:B1'
         status_data = read_data(status_range)
         last_reset_date = status_data[0][1] if len(status_data) > 0 and len(status_data[0]) > 1 else None
@@ -94,18 +95,112 @@ def reset_reservation_limits():
             print("無法讀取預約上限數據")
             return
 
-        # 構建新的數據，將 B 欄設置為 0
-        reset_values = [[row[0], 0] for row in data if len(row) > 0]
+        # 構建新的數據，將 B 欄設置為 0，C~P 欄設置為 "-"
+        reset_values = []
+        for row in data:
+            if len(row) > 0:
+                reset_row = [row[0], 0] + ["-"] * 14  # C~P 欄總共 14 欄
+                reset_values.append(reset_row)
+
         update_data(RESERVATION_LIMIT_RANGE, reset_values)
-        print("預約次數已重置為 0")
+        print("✅ 預約次數與預約紀錄已重置")
 
         # 更新重置日期
         update_data(status_range, [["last_reset_date", today.isoformat()]])
-        print("重置標記已更新")
+        print("✅ 重置標記已更新")
+
     except Exception as e:
-        print(f"重置預約次數失敗：{e}")
+        print(f"❌ 重置預約次數時發生錯誤: {e}")
+
+
+def create_reservation_log(user_name, event_details):
+    """
+    在 '預約上限' 試算表中的該使用者的第三欄開始寫入預約事件
+    若第三欄已有預約，則填入下一個可用欄位（最多到第16欄）
+
+    :param user_name: 使用者名稱
+    :param event_details: 預約事件詳情 (例如 "2025-01-30 10:00 - 大琴房")
+    """
+    try:
+        reservation_data = read_data(RESERVATION_LIMIT_RANGE)
+
+        for index, row in enumerate(reservation_data):
+            # print(f"row: {row}")
+            if len(row) >= 2 and row[0] == user_name:
+                # 找到使用者所在行
+                user_row_index = index + 1  # Google Sheets 的行索引是從 1 開始的
+
+                # 計算下一個可寫入的欄位（C 到 P，因為第三欄是 C，16 欄是 P）
+                max_columns = 16  # A, B 是使用者名稱與次數，C~P 是預約紀錄
+                start_column = 3   # 第三欄 (C)
+                next_available_col = None
+
+                # 找到第一個空白欄位
+                for col in range(start_column, max_columns + 1):
+                    # print(f"row: {row}, col: {col}, len(row): {len(row)}")
+                    if row[col - 1] == "-":
+                        next_available_col = col
+                        break
+
+                # 若已達到第16欄，則不再新增
+                if next_available_col is None:
+                    print(f"⚠️ 使用者 {user_name} 預約已達 14 次上限，無法再新增事件。")
+                    return False
+
+                # 轉換為 Google Sheets 的欄位字母（C ~ P）
+                column_letter = chr(65 + next_available_col - 1)
+                range_to_update = f'預約上限!{column_letter}{user_row_index}'
+
+                # 更新該欄位為新的預約事件
+                update_data(range_to_update, [[event_details]])
+                print(f"✅ 已將事件 '{event_details}' 記錄到 {range_to_update}")
+                return True
+
+        print(f"⚠️ 未找到使用者 {user_name}，無法記錄預約事件。")
+        return False
+
+    except Exception as e:
+        print(f"❌ 更新預約紀錄時發生錯誤: {e}")
+        return False
+
+def cancel_reservation_log(user_name, event_name):
+    """
+    取消使用者的預約事件
+    :param user_name: 使用者名稱
+    :param event_name: 要取消的預約事件名稱
+    """
+    try:
+        reservation_data = read_data(RESERVATION_LIMIT_RANGE)
+
+        for index, row in enumerate(reservation_data):
+            if len(row) >= 2 and row[0] == user_name:
+                # 找到使用者所在行
+                user_row_index = index + 1  # Google Sheets 的行索引是從 1 開始的
+
+                # 找到要取消的預約事件
+                for col in range(3, 16 + 1):
+                    if row[col - 1] == event_name:
+                        # 轉換為 Google Sheets 的欄位字母（C ~ P）
+                        column_letter = chr(65 + col - 1)
+                        range_to_update = f'預約上限!{column_letter}{user_row_index}'
+
+                        # 更新該欄位為 "-"
+                        update_data(range_to_update, [["-"]])
+                        print(f"✅ 已取消事件 '{event_name}'")
+                        return True
+
+                print(f"⚠️ 未找到事件 '{event_name}'，無法取消。")
+                return False
+
+        print(f"⚠️ 未找到使用者 {user_name}，無法取消預約事件。")
+        return False
+
+    except Exception as e:
+        print(f"❌ 取消預約紀錄時發生錯誤: {e}")
+        return False
+    
 
 # 測試讀取數據
-print("這裡確保Sheets能夠成功讀取數據")
+print("這裡確保Sheets能夠成功讀取數據，如果顯示[['姓名', '學號']]代表正常讀取：")
 print(read_data(f'{FORM_RESPONSES_SHEET}!A1:B1'))  # 測試讀取表單回應的前 1 行
 print()
