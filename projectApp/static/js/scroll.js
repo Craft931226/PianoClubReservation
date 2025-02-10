@@ -23,8 +23,8 @@ const translations = {
     "1.預約方式為即按即預約。": { en: "1.The reservation method is instant reservation.", zh: "1.預約方式為即按即預約。" },
     "2.每次預約為半個小時": { en: "2.Each reservation is for half an hour.", zh: "2.每次預約為半個小時。" },
     "3.每人每周不得預約超過七小時，違規者系統將自動取消。": { en: "3.Each person is not allowed to reserve more than seven hours per week. Violators will be automatically canceled by the system.", zh: "3.每人每周不得預約超過七小時，違規者系統將自動取消。" },
-    "4.每周日00:00才會開放當周可預約的時段" : { en: "4.The available time slots for the week will be opened at 00:00 on Sunday.", zh: "4.每周日00:00才會開放當周可預約的時段" },
-    "5.為達使用琴房效率最大化，預約後若無法到場請記得取消預約": { en: "5.In order to maximize the efficiency of using the piano room, please remember to cancel the reservation if you cannot attend after the reservation.", zh: "5.為達使用琴房效率最大化，預約後若無法到場請記得取消預約" },
+    "4.每周日00:00才會開放當周可預約的時段" : { en: "4.The available time slots for the week will be opened at 00:00 on Sunday.", zh: "4.每周日00:00才會開放當周可預約的時段。" },
+    "5.為達使用琴房效率最大化，預約後若無法到場請記得取消預約": { en: "5.In order to maximize the efficiency of using the piano room, please remember to cancel the reservation if you cannot attend after the reservation.", zh: "5.為達使用琴房效率最大化，預約後若無法到場請記得取消預約。" },
 
     "關於琴房": { en: "About the Piano Room", zh: "關於琴房" },
     "1.開完琴房後鑰匙請記得掛回社窩，並鎖上門。": { en: "1.After unlocking the piano room, please remember to hang the key back in the club room and lock the door.", zh: "1.開完琴房後鑰匙請記得掛回社窩，並鎖上門。" },
@@ -40,7 +40,7 @@ const translations = {
     "Q4:如何修改密碼？" : { en: "Q4: How to change password?", zh: "Q4:如何修改密碼？" },
     "A4:請點擊「個人」，點擊「更改密碼」。" : { en: "A4: Please click 'Profile', click 'Change Password'.", zh: "A4:請點擊「個人」，點擊「更改密碼」。" },
     "Q5:如何查看自己的預約？" : { en: "Q5: How to check my reservation?", zh: "Q5:如何查看自己的預約？" },
-    "A5:請點擊「個人」即可看見預約歷史" : { en: "A5: Please click 'Profile' to see the reservation history", zh: "A5:請點擊「個人」即可看見預約歷史" },
+    "A5:請點擊「個人」即可看見預約歷史" : { en: "A5: Please click 'Profile' to see the reservation history.", zh: "A5:請點擊「個人」即可看見預約歷。" },
     
 };
 
