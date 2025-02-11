@@ -23,7 +23,7 @@ def login_view(request):
         student_id = request.POST.get('student_id')
         print("--------------------這裡可以看到誰登入了系統：")
         time = datetime.now()
-        print(f'{time} {name} 嘗試登入了系統')
+        print(f'{time} {name} {student_id}嘗試登入了系統')
         try:
             users = read_data(GOOGLE_SHEET_RANGE)  # 獲取用戶數據
             if not users:
@@ -34,7 +34,7 @@ def login_view(request):
                     if len(user) >= 2 and user[0] == name and user[2] == student_id:
                         user_found = True
                         signed_username = signer.sign(name)  # 生成簽名的用戶名
-                        print(f'{time} {name} 登入成功')
+                        print(f'{time} {name} {student_id}登入成功')
                         print()
                         return redirect(f'/home/?username={signed_username}')
                 
@@ -53,11 +53,15 @@ def home_view(request):
 
     try:
         username = signer.unsign(signed_username)  # 驗證簽名
+        signed_username = signer.sign(username)  # 重新產生簽名，確保安全
 
         # 每次訪問時檢查是否需要重置
         reset_limits_if_needed()
 
-        return render(request, "homePage.html", {'username': username})
+        return render(request, "homePage.html", {
+            'username': username,
+            'signed_username': signed_username  # 傳遞簽名名稱
+        })    
     except BadSignature:
         return redirect('login')  # 簽名無效時重定向到登入頁面
 
@@ -65,14 +69,16 @@ def Profile_view(request):
     """
     進入個人資料頁面時，根據 username 從 Google Sheets 讀取密碼，並傳遞給前端
     """
-    username = request.GET.get('username')  # 從 URL 參數獲取 username
+    signed_username = request.GET.get('username')
 
-    if not username:
+    if not signed_username:
         return redirect('home')  # 如果沒有提供 username，返回首頁
-    print("--------------------這裡可以看到誰點擊了個人：")
-    print("函式名稱：Profile_view")
-    print(f"使用者: {username}")
     try:
+        username = signer.unsign(signed_username)  # 驗證簽名
+        signed_username = signer.sign(username)
+        print("--------------------這裡可以看到誰點擊了個人：")
+        print("函式名稱：Profile_view")
+        print(f"使用者: {username}")
         # 社員資料表的範圍，包含用戶數據
         users = read_data(GOOGLE_SHEET_RANGE)  # 從 Google Sheets 讀取用戶數據
         if not users:
@@ -125,6 +131,7 @@ def Profile_view(request):
             num += 1
         print()
         return render(request, 'Profile.html', {
+            'signed_username' : signed_username,
             'username': username,
             'password': password,
             'reserveLimit': reserveLimit,
@@ -140,13 +147,15 @@ def Profile_view(request):
 def change_password_view(request):
     error_message = None
     success_message = None
-
+    print("--------------------這裡可以看到有人點擊了修改密碼：")
+    print("函式change_password_view")
+    
     if request.method == 'POST':
         name = request.POST.get('name')
         current_password = request.POST.get('currentPassword')
         new_password = request.POST.get('newPassword')
         confirm_password = request.POST.get('confirmPassword')
-
+        print(f'{name} 想要從舊密碼"{current_password}"換成"{new_password}"，認證密碼"{confirm_password}"')
         if new_password != confirm_password:
             error_message = "新密碼與確認密碼不符，請重新輸入。"
         else:
@@ -172,7 +181,7 @@ def change_password_view(request):
                         error_message = "用戶名或當前密碼錯誤，請重新輸入。"
             except Exception as e:
                 error_message = f"系統錯誤：{e}"
-
+    print()
     return render(request, "ChangePassword.html", {
         'error_message': error_message,
         'success_message': success_message
@@ -213,7 +222,6 @@ def get_calendar_events_view(request):
         for event in events:
             print(f"{events_num} 標題：{event['summary']} 開始時間：{event['start']}")
             events_num += 1
-        print()
         print()
 
         return JsonResponse({'events': events}, status=200)
@@ -290,7 +298,6 @@ def create_calendar_event_view(request):
             # recipient_email = get_user_email(user_name)
             # full_time = f"{date} {start_time}"
             # send_result = send_email(user_name, full_time, room_type, recipient_email)
-            print()
             print()
 
             # if "error" in send_result:
