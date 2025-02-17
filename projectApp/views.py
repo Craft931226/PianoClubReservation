@@ -456,7 +456,7 @@ def reset_limits_if_needed():
 
 def get_latest_post_view(request):
     post = get_facebook_posts()
-    print(post)
+    # print(post)
     if post:
         return JsonResponse({'post': post}, status=200)
     else:

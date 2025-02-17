@@ -21,6 +21,7 @@
             <div class="form-group">
                 <label for="password">密碼(第一次登入會是學號)</label>
                 <input type="password" id="student_id" name="student_id" placeholder="輸入您的密碼" required>
+                <span class="toggle-password" onclick="togglePassword()" style="cursor: pointer;">👁️</span>
             </div>
             {% if error_message %}
             <p style="color:red;">{{ error_message }}<br>有任何問題請聯繫網管。<br>Forget password?<br>Please contact the the network administrator if any issue.</p>
@@ -28,6 +29,21 @@
             <button type="submit" class="login-btn">登入</button>
         </form>
     </div>
-    
+    <script>
+        function togglePassword() {
+            let passwordInput = document.getElementById("student_id");
+            let toggleIcon = document.querySelector(".toggle-password");
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";  // 顯示密碼
+                toggleIcon.textContent = "🙈";  // 變成閉眼
+                toggleIcon.style.cursor = "pointer";
+            } else {
+                passwordInput.type = "password";  // 隱藏密碼
+                toggleIcon.textContent = "👁️";  // 變成睜眼
+                toggleIcon.style.cursor = "pointer";
+            }
+        }
+    </script>
 </body>
 </html>
