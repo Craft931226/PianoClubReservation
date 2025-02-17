@@ -10,4 +10,5 @@ urlpatterns = [
     path('get-calendar-events/', views.get_calendar_events_view, name='get_calendar_events'),  # 新增獲取日曆事件的視圖
     path('create-calendar-event/', views.create_calendar_event_view, name='create_calendar_event'), # 新增創建日曆事件的視圖
     path('cancel-calendar-event-by-time/', views.cancel_calendar_event_by_time, name='cancel_calendar_event_by_time'), # 新增取消日曆事件的視圖
+    path('get-latest-post/', views.get_latest_post_view, name='get_latest_post'),  # 新增獲取最新貼文的視圖
 ]

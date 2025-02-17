@@ -10,11 +10,6 @@ credentials_info = json.loads(os.getenv('GOOGLE_CREDENTIALS_JSON'))
 credentials = Credentials.from_service_account_info(credentials_info, scopes=SCOPES)
 service = build('calendar', 'v3', credentials=credentials)
 
-# # 本地憑證文件的路徑
-# SCOPES = ['https://www.googleapis.com/auth/calendar']
-# SERVICE_ACCOUNT_FILE = r"C:\Users\User\Downloads\skilled-script-448314-j0-0c05f20ca146.json"
-# credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-# service = build('calendar', 'v3', credentials=credentials)
 
 # 獲取指定日期的事件
 def get_events_for_date(calendar_ids, date):
@@ -86,7 +81,7 @@ def create_event(date, start_time, user_name, room_type, duration):
 
     # 創建事件
     created_event = service.events().insert(calendarId=calendar_id, body=event).execute()
-    print(f"事件已創建，連結: {created_event.get('htmlLink')}")
+    print(f"✅ 事件已創建，連結: {created_event.get('htmlLink')}")
     return created_event
 
 # cancel 的功能在view.py中

@@ -14,12 +14,6 @@ SPREADSHEET_ID = os.getenv('GOOGLE_SHEET_ID')  # 修改為實際試算表的 ID
 service = build('sheets', 'v4', credentials=credentials)
 
 
-# # 配置 Google Sheets API 憑證(本地端)
-# SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-# SERVICE_ACCOUNT_FILE = r"C:\Users\User\Downloads\skilled-script-448314-j0-0c05f20ca146.json"
-# credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-# service = build('sheets', 'v4', credentials=credentials)
-# SPREADSHEET_ID = '1TWp1XNDx46NPLRZQA9AVA1yghVxhA_2TZwwb9c0fIMA'
 
 
 # update_user_name 函數將用戶名更新到試算表中

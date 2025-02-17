@@ -15,7 +15,7 @@
         <form action="{% url 'login' %}" method="POST">
             {% csrf_token %}
             <div class="form-group">
-                <label for="name">名子</label>
+                <label for="name">名字</label>
                 <input type="text" id="name" name="name" placeholder="輸入您的使用者名稱" required>
             </div>
             <div class="form-group">
@@ -23,7 +23,7 @@
                 <input type="password" id="student_id" name="student_id" placeholder="輸入您的密碼" required>
             </div>
             {% if error_message %}
-            <p style="color:red;">{{ error_message }}<br>忘記密碼請聯繫網管。<br>Forget password?<br>Please contact the the network administrator.</p>
+            <p style="color:red;">{{ error_message }}<br>有任何問題請聯繫網管。<br>Forget password?<br>Please contact the the network administrator if any issue.</p>
             {% endif %} 
             <button type="submit" class="login-btn">登入</button>
         </form>

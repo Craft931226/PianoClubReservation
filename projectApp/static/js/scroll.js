@@ -1,5 +1,6 @@
 const translations = {
     "主頁": { en: "Home", zh: "主頁" },
+    "公告": { en: "Announcement", zh: "公告" },
     "預約系統": { en: "Reservation System", zh: "預約系統" },
     "注意事項": { en: "Notations", zh: "注意事項" },
     "常見問題": { en: "F&Q", zh: "常見問題" },
@@ -9,6 +10,7 @@ const translations = {
     "登出": { en: "Logout", zh: "登出" },
     "歡迎": { en: "Welcome,", zh: "歡迎，" },
     "歡迎來到琴房預約系統": { en: "Welcome to the Piano Room Reservation System", zh: "歡迎來到琴房預約系統" },
+    "最新 Facebook 貼文": { en: "Latest Facebook Post", zh: "最新 Facebook 貼文" },
     "大琴房" : { en: "Large Piano room", zh: "大琴房"},
     "Large Piano room" : { en: "Large Piano room", zh: "大琴房"},
     "中琴房" : { en: "Medium Piano room", zh: "中琴房"},
@@ -459,10 +461,26 @@ function updateReservationButtons() {
   });
 }
 
-
+async function fetchLatestPost(){
+    try {
+        const response = await fetch('/get-latest-post/');
+        const post = await response.json();
+        // console.log('📝 最新貼文：', post);
+        const postContainer = document.getElementById('post-content');
+        postContainer.innerHTML = `
+            <p class="white-space-pre">${post.post.message}</p>
+            ${post.post.image ? `<img src="${post.post.image}" alt="Facebook Image" class="Post_Image">` : ''}
+            <br>
+            <a href="${post.post.link}" target="_blank" class="post-link">查看更多</a>
+        `;
+    } catch (error) {
+        console.error('❌ 無法獲取最新貼文：', error);
+    }
+}
 
 // 初始化
 document.addEventListener('DOMContentLoaded', () => {
   updateReservationButtons(); // 在頁面加載時更新按鈕文字
+  fetchLatestPost();
 });
 

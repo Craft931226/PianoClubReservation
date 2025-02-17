@@ -138,3 +138,24 @@ if not DEBUG:
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "null": {
+            "class": "logging.NullHandler",
+        },
+    },
+    "loggers": {
+        "django.server": {  # 隱藏 HTTP 訪問日誌
+            "handlers": ["null"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "gunicorn.access": {  # 隱藏 Gunicorn 訪問日誌（如果使用 Gunicorn）
+            "handlers": ["null"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}

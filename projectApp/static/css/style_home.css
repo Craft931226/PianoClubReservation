@@ -347,3 +347,26 @@ li.name{
 .cancel-button:hover {
     background: #e55342;
 }
+.Post_Image{
+    width: 66%;
+    height: 66%;
+    object-fit: cover;
+    border-radius: 5px;
+}
+.white-space-pre{
+    white-space: pre-line;
+}
+.post-link{
+    border-radius: 5px;
+    border: 1px solid #7c7c7c;
+    padding: 7px 10px;
+    color:#ff6347;
+    text-decoration: none;
+    text-align: center;
+    transition: background 0.5s;
+    font-weight: 400;
+}
+.post-link:hover {
+    background: #646464;
+    color: white;
+}
