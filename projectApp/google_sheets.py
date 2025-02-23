@@ -13,11 +13,6 @@ credentials = Credentials.from_service_account_info(credentials_info, scopes=SCO
 SPREADSHEET_ID = os.getenv('GOOGLE_SHEET_ID')  # 修改為實際試算表的 ID
 service = build('sheets', 'v4', credentials=credentials)
 
-# # 配置 Google Sheets API 憑證(本地端)
-# SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-# SERVICE_ACCOUNT_FILE = r"C:\Users\User\Downloads\skilled-script-448314-j0-0c05f20ca146.json"
-# credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-# service = build('sheets', 'v4', credentials=credentials)
 
 
 # update_user_name 函數將用戶名更新到試算表中
@@ -25,7 +20,7 @@ service = build('sheets', 'v4', credentials=credentials)
 FORM_RESPONSES_SHEET = '社員資料'
 RESERVATION_LIMIT_SHEET = '預約上限'
 FORM_RESPONSES_RANGE = f'{FORM_RESPONSES_SHEET}!A1:B'  # 假設第一列為名稱，第二列為學號
-RESERVATION_LIMIT_RANGE = f'{RESERVATION_LIMIT_SHEET}!A1:P'  # 假設第一列為名稱，第二列為學號
+RESERVATION_LIMIT_RANGE = f'{RESERVATION_LIMIT_SHEET}!A1:P'  
 
 # 讀取數據
 def read_data(range_name):
@@ -49,7 +44,7 @@ def update_data(range_name, values):
             valueInputOption="RAW",
             body=body
         ).execute()
-        print(f"{result.get('updatedCells')} cells updated.")
+        # print(f"{result.get('updatedCells')} cells updated.")
     except Exception as e:
         print(f"Error updating data: {e}")
 

@@ -3,20 +3,20 @@ import json
 import os
 
 # Facebook API 設定
-# 這個別忘了上傳GitHub要刪掉
 ACCESS_TOKEN = os.getenv("FACEBOOK_ACCESS_TOKEN")  # 你的 API Token
 PAGE_ID = os.getenv("FACEBOOK_PAGE_ID")  # 粉絲專頁 ID
 FIELDS = "message,full_picture,permalink_url"
 LIMIT = 1
 
 def get_facebook_posts():
-    url = f"https://graph.facebook.com/v18.0/{PAGE_ID}/posts"
+    url = f"https://graph.facebook.com/v22.0/{PAGE_ID}/posts"
     params = {
         'fields': FIELDS,
         'access_token': ACCESS_TOKEN,
         'limit': LIMIT
     }
     response = requests.get(url, params = params)
+    # print(response)
 
     if response.status_code == 200:
         data = response.json()

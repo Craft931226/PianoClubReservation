@@ -11,6 +11,8 @@ const translations = {
     "歡迎": { en: "Welcome,", zh: "歡迎，" },
     "歡迎來到琴房預約系統": { en: "Welcome to the Piano Room Reservation System", zh: "歡迎來到琴房預約系統" },
     "最新 Facebook 貼文": { en: "Latest Facebook Post", zh: "最新 Facebook 貼文" },
+    "查看更多": { en: "View More", zh: "查看更多" },
+    "琴房報修": { en: "Piano Room Report Repair", zh: "琴房報修" },
     "大琴房" : { en: "Large Piano room", zh: "大琴房"},
     "Large Piano room" : { en: "Large Piano room", zh: "大琴房"},
     "中琴房" : { en: "Medium Piano room", zh: "中琴房"},
@@ -471,7 +473,7 @@ async function fetchLatestPost(){
             <p class="white-space-pre">${post.post.message}</p>
             ${post.post.image ? `<img src="${post.post.image}" alt="Facebook Image" class="Post_Image">` : ''}
             <br>
-            <a href="${post.post.link}" target="_blank" class="post-link">查看更多</a>
+            <a href="${post.post.link}" target="_blank" class="post-link" data-translate="查看更多">查看更多</a>
         `;
     } catch (error) {
         console.error('❌ 無法獲取最新貼文：', error);

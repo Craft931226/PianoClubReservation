@@ -21,6 +21,7 @@ signer = Signer()  # 簽名工具
 GOOGLE_SHEET_RANGE = '社員資料!A2:C'  # 假設試算表有 Name 和 Student ID 列
 RESERVATION_LIMIT_RANGE = '預約上限!A1:P'  # 假設試算表有 Name 和 Limit 列
 
+
 def login_view(request):
     error_message = None
 
@@ -62,7 +63,7 @@ def home_view(request):
         signed_username = signer.sign(username)  # 重新產生簽名，確保安全
 
         # 每次訪問時檢查是否需要重置
-        reset_limits_if_needed()
+        # reset_limits_if_needed()
 
         return render(request, "homePage.html", {
             'username': username,
@@ -131,7 +132,7 @@ def Profile_view(request):
         # print(len(reservations), reservations)
         # print(len(filtered_reservations), filtered_reservations)
         # print(len(sorted_reservations),sorted_reservations)
-        num =1
+        # num =1
         # for res in sorted_reservations:
         #     print(f"{num}. 📅 日期: {res['date']} 🕑 時間: {res['time']} 🎹 琴房: {res['room']}")
         #     num += 1
