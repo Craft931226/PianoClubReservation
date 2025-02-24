@@ -459,6 +459,6 @@ def get_latest_post_view(request):
     post = get_facebook_posts()
     # print(post)
     if post:
-        return JsonResponse({'post': post}, status=200)
+        return JsonResponse([post], safe = False)
     else:
         return JsonResponse({'error': '無法獲取最新貼文'}, status=500)

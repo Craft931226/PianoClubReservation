@@ -463,18 +463,31 @@ function updateReservationButtons() {
   });
 }
 
-async function fetchLatestPost(){
+async function fetchLatestPost() {
     try {
         const response = await fetch('/get-latest-post/');
-        const post = await response.json();
-        // console.log('📝 最新貼文：', post);
+        const posts_data = await response.json(); // 獲取貼文列表
+        const posts = posts_data[0]
+        console.log('📝 最新貼文：', posts);
+
         const postContainer = document.getElementById('post-content');
-        postContainer.innerHTML = `
-            <p class="white-space-pre">${post.post.message}</p>
-            ${post.post.image ? `<img src="${post.post.image}" alt="Facebook Image" class="Post_Image">` : ''}
-            <br>
-            <a href="${post.post.link}" target="_blank" class="post-link" data-translate="查看更多">查看更多</a>
-        `;
+        postContainer.innerHTML = ""; // 清空現有內容
+
+        posts.forEach((post) => {
+            const postElement = document.createElement("div");
+            postElement.classList.add("fb-post");
+
+            postElement.innerHTML = `
+                <p class="white-space-pre">${post.message}</p>
+                ${post.image ? `<img src="${post.image}" alt="Facebook Image" class="Post_Image">` : ''}
+                <br>
+                <a href="${post.link}" target="_blank" class="post-link" data-translate="查看更多">查看更多</a>
+                <hr>
+            `;
+
+            postContainer.appendChild(postElement); // 追加貼文
+        });
+
     } catch (error) {
         console.error('❌ 無法獲取最新貼文：', error);
     }
