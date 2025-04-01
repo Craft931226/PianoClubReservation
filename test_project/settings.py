@@ -31,7 +31,8 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 DEBUG = False
 ALLOWED_HOSTS = ['127.0.0.1', 
                  'ncupianoreservationsystem.de.r.appspot.com',
-                 'skilled-script-448314-j0.de.r.appspot.com']
+                 'skilled-script-448314-j0.de.r.appspot.com',
+                 'pianoreservation-production.up.railway.app']
 
 
 # Application definition
