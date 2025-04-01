@@ -8,7 +8,7 @@ db.sqlite3
 *.log
 
 # Virtual environment
-venv/
+venv311/
 
 # IDE specific
 .vscode/
