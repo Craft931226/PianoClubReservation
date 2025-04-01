@@ -1,5 +1,6 @@
 from datetime import date, datetime, timedelta, timezone
 import json
+from venv import logger
 from zoneinfo import ZoneInfo
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -7,10 +8,11 @@ from django.shortcuts import render, redirect
 from projectApp.Facebook_posts import get_facebook_posts
 
 # from projectApp.google_gmail import send_cancel_email, send_email
-from .google_sheets import cancel_reservation_log, create_reservation_log, get_user_email, read_data, reset_reservation_limits, update_data
+from .google_sheets import GetRoomEmail, cancel_reservation_log, create_reservation_log, get_user_email, read_data, reset_reservation_limits, update_data
 from django.core.signing import Signer, BadSignature
 from django.http import JsonResponse
 from .google_calendar import create_event, get_events_for_date, create_event, service
+from urllib.parse import quote, unquote
 
 number_sequence = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟', 
  '1️⃣ 1️⃣', '1️⃣ 2️⃣', '1️⃣ 3️⃣', '1️⃣ 4️⃣', '1️⃣ 5️⃣', '1️⃣ 6️⃣', '1️⃣ 7️⃣', '1️⃣ 8️⃣', '1️⃣ 9️⃣', 
@@ -20,73 +22,70 @@ signer = Signer()  # 簽名工具
 # 試算表的範圍，包含用戶數據
 GOOGLE_SHEET_RANGE = '社員資料!A2:C'  # 假設試算表有 Name 和 Student ID 列
 RESERVATION_LIMIT_RANGE = '預約上限!A1:P'  # 假設試算表有 Name 和 Limit 列
+STATUS_RANGE = '系統狀態'
+RULES_RANGE = '規則'
 
 
 def login_view(request):
     error_message = None
 
     if request.method == 'POST':
-        name = request.POST.get('name')
-        student_id = request.POST.get('student_id')
-        print("--------------------這裡可以看到誰登入了系統：")
-        # time = datetime.now()
-        print(f'❓ {name} {student_id}嘗試登入了系統')
+        name = request.POST.get('name', '').strip()
+        student_id = request.POST.get('student_id', '').strip()
+
+        if not name or not student_id:
+            error_message = "請輸入帳號與學號"
+            return render(request, 'Login.html', {'error_message': error_message})
+
         try:
             users = read_data(GOOGLE_SHEET_RANGE)  # 獲取用戶數據
             if not users:
                 error_message = "無法讀取用戶數據，請稍後再試。"
             else:
-                user_found = False
                 for user in users:
                     if len(user) >= 2 and user[0] == name and user[2] == student_id:
-                        user_found = True
-                        signed_username = signer.sign(name)  # 生成簽名的用戶名
-                        print(f'💁 {name} {student_id}登入成功')
-                        print()
-                        return redirect(f'/home/?username={signed_username}')
-                
-                if not user_found:
-                    print(f'❌ {name} 登入失敗')
-                    error_message = "帳號或密碼錯誤，請重新輸入。"
+                        logger.info(f'{name} 登入成功')
+
+                        response = redirect('/home/')  # 重定向到首頁
+                        encoded_name = quote(name)  # 簽名用戶名
+                        response.set_cookie('username', encoded_name, 
+                                            max_age=3600, 
+                                            httponly=True,
+                                            samesite="Strict",
+                                            secure=True)  # 設定 Cookie
+                        return response
+
+                error_message = "帳號或密碼錯誤，請重新輸入。"
+                logger.warning(f'{name} 登入失敗')
         except Exception as e:
-            error_message = f"系統錯誤：{e}"
+            logger.error(f"系統錯誤: {e}")
+            error_message = "系統發生錯誤，請聯繫管理員。"
 
     return render(request, 'Login.html', {'error_message': error_message})
 
+
 def home_view(request):
-    signed_username = request.GET.get('username')
-    if not signed_username:
-        return redirect('login')  # 如果沒有簽名的用戶名，重定向到登入頁面
+    encoded_username = request.COOKIES.get('username')  # 從 Cookie 讀取 username
+    username = unquote(encoded_username) if encoded_username else None  # 解碼 username
 
-    try:
-        username = signer.unsign(signed_username)  # 驗證簽名
-        signed_username = signer.sign(username)  # 重新產生簽名，確保安全
+    if not username:
+        return redirect('login')  # 如果 Cookie 不存在，跳轉到登入頁面
 
-        # 每次訪問時檢查是否需要重置
-        # reset_limits_if_needed()
+    return render(request, "homePage.html", {'username': username})
 
-        return render(request, "homePage.html", {
-            'username': username,
-            'signed_username': signed_username  # 傳遞簽名名稱
-        })    
-    except BadSignature:
-        return redirect('login')  # 簽名無效時重定向到登入頁面
 
 def Profile_view(request):
-    """
-    進入個人資料頁面時，根據 username 從 Google Sheets 讀取密碼，並傳遞給前端
-    """
-    signed_username = request.GET.get('username')
+    encoded_username = request.COOKIES.get('username')  # 從 Cookie 讀取 username
+    username = unquote(encoded_username) if encoded_username else None  # 解碼 username
 
-    if not signed_username:
-        return redirect('home')  # 如果沒有提供 username，返回首頁
+    if not username:
+        return redirect('home')  # 如果 Cookie 不存在，返回首頁
+
     try:
-        username = signer.unsign(signed_username)  # 驗證簽名
-        signed_username = signer.sign(username)
         print("--------------------這裡可以看到誰點擊了個人：")
         print("📑 函式名稱：Profile_view")
         print(f"👤 使用者: {username}")
-        # 社員資料表的範圍，包含用戶數據
+
         users = read_data(GOOGLE_SHEET_RANGE)  # 從 Google Sheets 讀取用戶數據
         if not users:
             return JsonResponse({'error': '無法讀取用戶數據'}, status=500)
@@ -99,8 +98,7 @@ def Profile_view(request):
 
         if password is None:
             return JsonResponse({'error': '未找到該用戶'}, status=404)
-        
-        # 讀取使用者的預約上限
+# 讀取使用者的預約上限
         reserveLimit = None
         reservation_data = read_data(RESERVATION_LIMIT_RANGE)
         reservations = []
@@ -138,7 +136,6 @@ def Profile_view(request):
         #     num += 1
         # print()
         return render(request, 'Profile.html', {
-            'signed_username' : signed_username,
             'username': username,
             'password': password,
             'reserveLimit': reserveLimit,
@@ -148,6 +145,10 @@ def Profile_view(request):
     except Exception as e:
         return JsonResponse({'error': f'系統錯誤：{e}'}, status=500)
 
+def logout_view(request):
+    response = redirect('login')  # 登出後重定向到登入頁面
+    response.delete_cookie('username')  # 刪除 Cookie
+    return response
 
 
 
@@ -209,12 +210,7 @@ def get_calendar_events_view(request):
             return JsonResponse({'error': 'Missing parameters'}, status=400)
 
         # 將琴房類型映射到日曆 ID
-        calendar_mapping = {
-            '大琴房': 'ncupianolarge@gmail.com',
-            '中琴房': 'ncupianomedium@gmail.com',
-            '小琴房': 'ncupianosmall@gmail.com',
-            '社窩': 'ncupiano31@gmail.com'
-        }
+        calendar_mapping = GetRoomEmail()
 
         calendar_id = calendar_mapping.get(room_type)
         if not calendar_id:
@@ -270,6 +266,12 @@ def create_calendar_event_view(request):
             print("📑 函式名稱：create_calendar_event_view")
             print(f"準備創建日曆事件: 📅 日期={date}, 🕑 時間={start_time}, 👤 使用者={user_name}, 🎹 琴房={room_type}")
             # 檢查使用者是否超過預約次數上限
+            status_data = read_data(STATUS_RANGE)
+            reserveLimit = 0
+            for row in status_data:
+                if len(row) > 0:
+                    if row[0] == 'WeeklyReservationLimit':
+                        reserveLimit = int(row[1])
             reservation_data = read_data(RESERVATION_LIMIT_RANGE)
             user_found = False
             # print(reservation_data)
@@ -278,10 +280,10 @@ def create_calendar_event_view(request):
                 if len(row) >= 2 and row[0] == user_name:  # 比對使用者名稱
                     user_found = True
                     current_count = int(row[1]) if row[1].isdigit() else 0
-                    if current_count >= 14:
+                    if current_count >= reserveLimit:
                         print(f"❎ {user_name} 已達到每周預約上限（14次）")
                         return JsonResponse({'success': False, 'error': '您已達到每周預約上限（14次）。'})
-                    for i in range(2, 16):
+                    for i in range(2, reserveLimit+2):
                         if event_details == row[i]:
                             print(f"❌ 使用者點擊過快")
                             return JsonResponse({'success': False, 'error': '您已預約過該時段。'})
@@ -338,12 +340,7 @@ def cancel_calendar_event_by_time(request):
                 return JsonResponse({'success': False, 'error': 'Missing required parameters'}, status=400)
 
             # 將琴房類型映射到日曆 ID
-            calendar_mapping = {
-                '大琴房': 'ncupianolarge@gmail.com',
-                '中琴房': 'ncupianomedium@gmail.com',
-                '小琴房': 'ncupianosmall@gmail.com',
-                '社窩': 'ncupiano31@gmail.com'
-            }
+            calendar_mapping = GetRoomEmail()
             calendar_id = calendar_mapping.get(room_type)
             if not calendar_id:
                 return JsonResponse({'success': False, 'error': '無效的琴房類型'}, status=400)
@@ -413,47 +410,6 @@ def cancel_calendar_event_by_time(request):
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
 
-def get_last_sunday(input_date):
-    """
-    計算指定日期所在周的星期天日期
-    :param input_date: 指定日期
-    :return: 該日期所在周的星期天
-    """
-    return input_date - timedelta(days=input_date.weekday() + 1) if input_date.weekday() != 6 else input_date
-
-def get_last_monday(input_date):
-    """
-    計算指定日期所在周的星期一日期
-    :param input_date: 指定日期
-    :return: 該日期所在周的星期一
-    """
-    return input_date - timedelta(days=input_date.weekday())
-
-def reset_limits_if_needed():
-    """
-    如果預約次數尚未重置，檢查是否需要執行重置操作。
-    """
-    print("--------------------檢查是否需要重置預約次數")
-    try:
-        # 檢查試算表中的上次重置日期
-        status_range = '系統狀態!A1:B1'
-        status_data = read_data(status_range)
-        last_reset_date = status_data[0][1] if len(status_data) > 0 and len(status_data[0]) > 1 else None
-
-        # 當前日期
-        tz = ZoneInfo("Asia/Taipei")  # 使用 zoneinfo 設定時區
-        today = datetime.now(tz).date()
-        last_sunday = get_last_sunday(today)  # 獲取當前日期所在周的星期天
-        print(f"當前日期: {today}, 上次重置日期: {last_reset_date}, 上周星期天: {last_sunday}")
-        # 如果 last_reset_date 為空，或者不屬於當週，執行重置
-        if not last_reset_date or date.fromisoformat(last_reset_date) < last_sunday:
-            reset_reservation_limits()  # 重置 B 欄
-            print(f"執行重置操作，將預約次數重置為 0 (日期: {today})")
-        else:
-            print(f"不需要重置，最後重置日期為: {last_reset_date}")
-    except Exception as e:
-        print(f"重置檢查過程中出錯: {e}")
-    print()
 
 def get_latest_post_view(request):
     post = get_facebook_posts()
@@ -462,3 +418,103 @@ def get_latest_post_view(request):
         return JsonResponse([post], safe = False)
     else:
         return JsonResponse({'error': '無法獲取最新貼文'}, status=500)
+    
+def get_show_reserve_name(request):
+    data = read_data(STATUS_RANGE)
+    for row in data:
+        if len(row) > 0:
+            if row[0] == 'ShowReserveName':
+                return JsonResponse({'ShowReserveName': row[1]})
+
+def get_room_type(request):
+    # print("call 到")
+    data = read_data(STATUS_RANGE)
+    for row in data:
+        if len(row) > 0:
+            if row[0] == 'NumbersOfrooms':
+                num =int(row[1])
+                # print(num)
+                break
+    for row in data:
+        if len(row) > 0:
+            if row[0] == 'RoomName':
+                room_name = row[1:1+num]
+                # print(room_name)
+                return JsonResponse({'RoomName': room_name})
+            
+def get_system_name(request):
+    # print("call")
+    data = read_data(STATUS_RANGE)
+    for row in data:
+        if len(row) > 0:
+            if row[0] == 'SystemName':
+                # print(row[1])
+                return JsonResponse({'SystemName': row[1]})
+            
+def get_time_range(request):
+    data = read_data(STATUS_RANGE)
+    for row in data:
+        if len(row) > 0:
+            if row[0] == 'ReserveTimeRange':
+                # print(row)
+                return JsonResponse({'starttime': int(row[1]), 'endtime': int(row[2])}) 
+
+def get_rules(request):
+    data = read_data("規則")
+    NumbersOfFAQs = 0
+    NumbersOfAnnounce = 0
+    for row in data:
+        if len(row) > 0:
+            if row[0] == '常見問題':
+                if row[1] != '狀態':
+                    if int(row[1][1]) > NumbersOfFAQs:
+                        NumbersOfFAQs = int(row[1][1])
+            if row[0] == '公告':
+                if row[1] != '狀態':
+                    if int(row[1][2]) > NumbersOfAnnounce:
+                        NumbersOfAnnounce = int(row[1][2])
+
+    # print(data)
+    announcement_state = False
+    notation_state = False
+    QAstate = False
+    announcement_title   = ["" for i in range(NumbersOfAnnounce)]
+    announcement_content = ["" for i in range(NumbersOfAnnounce)]
+    notation = {"system": [], "room": []}
+    Q = ["" for i in range(NumbersOfFAQs)]
+    A = ["" for i in range(NumbersOfFAQs)]
+    for row in data:
+        if len(row) > 0:
+            if row[0] == '常見問題':
+                if row[1] == '狀態':
+                    if row[2] == "Y":
+                        QAstate = True
+                if row[1][0] == "Q" and QAstate:
+                    Q[int(row[1][1])-1] = row[2]
+                if row[1][0] == "A" and QAstate:
+                    A[int(row[1][1])-1] = row[2]
+            if row[0] == '注意事項':
+                if row[1] == '狀態':
+                    if row[2] == "Y":
+                        notation_state = True
+                if row[1] == '預約系統' and notation_state:
+                    notation["system"].append(row[2])
+                if row[1] == '琴房' and notation_state:
+                    notation["room"].append(row[2])
+            if row[0] == '公告':
+                if row[1] == '狀態':
+                    if row[2] == "Y":
+                        announcement_state = True
+                if row[1][:2] == '標題' and announcement_state:
+                    announcement_title[int(row[1][2])-1] = row[2]
+                if row[1][:2] == '內文' and announcement_state:
+                    announcement_content[int(row[1][2])-1] = row[2]
+    print("公告標題", announcement_title)
+    print("公告內容", announcement_content)
+    return JsonResponse({'Q': Q, 
+                         'A': A,
+                         'notation': notation, 
+                         'announcement_title': announcement_title, 
+                         'announcement_content': announcement_content})
+
+    

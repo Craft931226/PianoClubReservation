@@ -4,13 +4,17 @@ import os
 from .google_sheets import read_data
 
 # Facebook API 設定
-ACCESS_TOKEN = os.getenv("FACEBOOK_ACCESS_TOKEN")  # 你的 API Token
+# ACCESS_TOKEN = os.getenv("FACEBOOK_ACCESS_TOKEN")  # 你的 API Token
 PAGE_ID = os.getenv("FACEBOOK_PAGE_ID")  # 粉絲專頁 ID
 FIELDS = "message,full_picture,permalink_url"
 SYSTEM_STATE_SHEET = '系統狀態'
 
+PAGE_ID = '176367845765381'
+
 def get_facebook_posts():
+    ACCESS_TOKEN = "1" 
     data = read_data(SYSTEM_STATE_SHEET)
+    # print(data)
     if not data:
         print("無法讀取系統狀態數據")
         return
@@ -19,7 +23,10 @@ def get_facebook_posts():
             if row[0] == 'NumbersOfPosts':
                 LIMIT = int(row[1])
                 # print(LIMIT)
-                break
+            if row[0] == 'FB':
+                ACCESS_TOKEN = str(row[1])
+    # print(ACCESS_TOKEN)
+    # print(LIMIT)
     url = f"https://graph.facebook.com/v22.0/{PAGE_ID}/posts"
     params = {
         'fields': FIELDS,
@@ -46,6 +53,7 @@ def get_facebook_posts():
         print(f"❌ API 請求失敗: {response.status_code}")
         return []
 
+
 # # 測試取得貼文
-facebook_posts = get_facebook_posts()
-print(json.dumps(facebook_posts, indent=2, ensure_ascii=False))
+# facebook_posts = get_facebook_posts()
+# print(json.dumps(facebook_posts, indent=2, ensure_ascii=False))

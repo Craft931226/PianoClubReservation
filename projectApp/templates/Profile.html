@@ -6,22 +6,22 @@
     <title>個人中心</title>
 
     {% load static %}
-    <link rel="icon" href="{% static 'favicon.ico' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}">
     <link rel="stylesheet" type= "text/css" href="{% static 'css/style_Profile.css' %}">
-    <script src="{% static 'js/scroll.js' %}"></script>
+    <!-- <script src="{% static 'js/scroll.js' %}"></script> -->
 </head>
 <body>
     <header>
         <nav>
             <ul class="drop-down-menu">
-                <select id="languages">
+                <!-- <select id="languages">
                     <option value="zh">中文</option>
                     <option value="en">English</option>
-                </select>
+                </select> -->
             </ul>
         </nav>
     </header>
-    <p class="inform" data-translate="(返回上一頁以回到主頁)">(返回上一頁回到預約系統)</p>
+    <p class="inform" data-translate="(返回上一頁以回到主頁)">(返回上一頁回到主業)</p>
     <div class="profile-container">
         <div class="profile-header">
             <h1 data-translate="個人中心">個人中心</h1>
@@ -30,12 +30,12 @@
         <div class="profile-info">
             <div class="profile-details">
                 <p><strong data-translate="姓名">姓名：</strong> <span id="user-name">{{ username }}</span></p>
-                <p><strong data-translate="密碼">密碼：</strong> <span id="user-password" style="display: none;">{{ password }}</span> 
+                <!-- <p><strong data-translate="密碼">密碼：</strong> <span id="user-password" style="display: none;">{{ password }}</span> 
                     <button class="show-btn" onclick="togglePassword()" id="toggle-password-btn" data-translate="顯示">顯示</button>
-                </p> 
+                </p>  -->
                 <p><strong data-translate="本週預約次數">本週預約次數：</strong> <span id="user-reservations">{{ reserveLimit }}</span> / 14</p>
                 <a class="change-password-btn" href="{% url 'change_password'%}" data-translate="修改密碼">修改密碼</a>
-                <a class="logout-btn" href="{% url 'login'%}" data-translate="登出">登出</a>
+                <a class="logout-btn" href="{% url 'logout'%}" data-translate="登出">登出</a>
             </div>
         </div>
 

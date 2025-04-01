@@ -18,21 +18,21 @@ const translation = {
     "登出": {en: "Logout", zh: "登出"},
 };
 
-function translatePage() {
-    const selectedLanguage = document.getElementById('languages').value || 'zh';
-    document.querySelectorAll('[data-translate]').forEach(element => {
-        const key = element.getAttribute('data-translate');
-        if (translation[key] && translation[key][selectedLanguage]) {
-            element.textContent = translation[key][selectedLanguage];
-        }
-    });
-}
+// function translatePage() {
+//     const selectedLanguage = document.getElementById('languages').value || 'zh';
+//     document.querySelectorAll('[data-translate]').forEach(element => {
+//         const key = element.getAttribute('data-translate');
+//         if (translation[key] && translation[key][selectedLanguage]) {
+//             element.textContent = translation[key][selectedLanguage];
+//         }
+//     });
+// }
 
-// 頁面載入時初始化翻譯
-document.addEventListener('DOMContentLoaded', translatePage);
+// // 頁面載入時初始化翻譯
+// document.addEventListener('DOMContentLoaded', translatePage);
 
-// 切換語言時重新翻譯
-document.getElementById('languages').addEventListener('change', translatePage);
+// // 切換語言時重新翻譯
+// document.getElementById('languages').addEventListener('change', translatePage);
 
 function togglePassword() {
     let passwordField = document.getElementById('user-password');
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
             reservationList.appendChild(row);
         });
 
-        translatePage(); // 重新翻譯房間名稱
+        // translatePage(); // 重新翻譯房間名稱
     }
 
     renderReservations();

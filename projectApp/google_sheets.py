@@ -19,10 +19,12 @@ service = build('sheets', 'v4', credentials=credentials)
 # credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 # service = build('sheets', 'v4', credentials=credentials)
 
+
 # update_user_name 函數將用戶名更新到試算表中
 # Define the sheet names and ranges
 FORM_RESPONSES_SHEET = '社員資料'
 RESERVATION_LIMIT_SHEET = '預約上限'
+SYSTEM_STATE_SHEET = '系統狀態'
 FORM_RESPONSES_RANGE = f'{FORM_RESPONSES_SHEET}!A1:B'  # 假設第一列為名稱，第二列為學號
 RESERVATION_LIMIT_RANGE = f'{RESERVATION_LIMIT_SHEET}!A1:P'  
 
@@ -195,9 +197,38 @@ def cancel_reservation_log(user_name, event_name):
     except Exception as e:
         print(f"❌ 取消預約紀錄時發生錯誤: {e}")
         return False
-    
+
+def GetRoomEmail():
+    try:
+        data = read_data(SYSTEM_STATE_SHEET)
+        if not data:
+            print("無法讀取系統狀態數據")
+            return
+        NumbersOfrooms = 0
+        for row in data:
+            if len(row) > 0:
+                if row[0] == 'NumbersOfrooms':
+                    NumbersOfrooms = int(row[1])
+                    break
+
+        RoomName = []
+        gmail = []
+        for row in data:
+            if len(row) > 0:
+                if row[0] == 'RoomGmail':
+                    for i in range(1,NumbersOfrooms+1):
+                        gmail.append(row[i])
+                if row[0] == 'RoomName':
+                    for i in range(1,NumbersOfrooms+1):
+                        RoomName.append(row[i])
+        RoomGmail = dict(zip(RoomName, gmail))
+        return RoomGmail
+    except Exception as e:
+        print(f"Error retrieving email: {e}")
+        return None
 
 # 測試讀取數據
 print("這裡確保Sheets能夠成功讀取數據，如果顯示[['姓名', '學號']]代表正常讀取：")
 print(read_data(f'{FORM_RESPONSES_SHEET}!A1:B1'))  # 測試讀取表單回應的前 1 行
 print()
+# print(GetRoomEmail())

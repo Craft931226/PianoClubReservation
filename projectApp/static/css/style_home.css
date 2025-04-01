@@ -1,4 +1,5 @@
 /* General Styles */
+@import url('https://fonts.googleapis.com/css2?family=Iansui&display=swap');
 
 body {
     font-family: Arial, sans-serif;
@@ -7,21 +8,27 @@ body {
     box-sizing: border-box;
     line-height: 1.6;
     color: #333;
-    
-    }
+}
+h2{
+    font-family: 'Iansui', sans-serif;
+
+}
 /* 固定 Header 在頂部 */
 header {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    background: #333; /* 確保 header 有背景色 */
+    background: #333;
+    /* 確保 header 有背景色 */
     color: white;
     /* padding: 10px 20px; */
-    z-index: 1000; /* 確保 header 在最上層 */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 添加陰影效果 */
+    z-index: 1000;
+    /* 確保 header 在最上層 */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    /* 添加陰影效果 */
 }
-    
+
 /* 主選單樣式 */
 header nav ul {
     list-style: none;
@@ -32,156 +39,196 @@ header nav ul {
 }
 
 header nav ul li {
-    position: relative; /* 確保子選單能正確定位 */
+    position: relative;
+    /* 確保子選單能正確定位 */
     margin-right: 0%;
 }
 
 header nav ul li a {
     color: #fff;
     text-decoration: none;
-    padding: 10px 20px; /* 控制按鈕內部的上下和左右間距 */
+    padding: 10px 20px;
+    /* 控制按鈕內部的上下和左右間距 */
     display: block;
-    height: 100%; /* 讓按鈕填滿 li 元素的高度 */
-    box-sizing: border-box; /* 包括內邊距和邊框計算在內 */
+    height: 100%;
+    /* 讓按鈕填滿 li 元素的高度 */
+    box-sizing: border-box;
+    /* 包括內邊距和邊框計算在內 */
 }
 
 /* 主選單懸停樣式 */
 header nav ul li a:hover {
-    background: #555; /* 改變懸停時的背景色 */
-    color: #ff6347; /* 改變文字顏色 */
-    height: 100%; /* 確保背景色填滿 */
+    background: #555;
+    /* 改變懸停時的背景色 */
+    color: #ff6347;
+    /* 改變文字顏色 */
+    height: 100%;
+    /* 確保背景色填滿 */
 }
 
 /* 子選單樣式 */
 header nav ul li ul {
-    display: none; /* 預設隱藏 */
+    display: none;
+    /* 預設隱藏 */
     position: absolute;
-    top: 100%; /* 放置於主選單項的正下方 */
+    top: 100%;
+    /* 放置於主選單項的正下方 */
     left: 0;
     background-color: #444;
     padding: 0;
     list-style: none;
     border-radius: 5px;
-    min-width: 150px; /* 設置固定寬度 */
+    min-width: 150px;
+    /* 設置固定寬度 */
     z-index: 100;
 }
 
 header nav ul li ul li {
-    width: 100%; /* 確保子選單項的寬度與父容器一致 */
+    width: 100%;
+    /* 確保子選單項的寬度與父容器一致 */
 }
 
 header nav ul li ul li a {
-    padding: 10px 20px; /* 確保文字區域左右均勻 */
+    padding: 10px 20px;
+    /* 確保文字區域左右均勻 */
     display: block;
-    white-space: nowrap; /* 防止文字換行 */
+    white-space: nowrap;
+    /* 防止文字換行 */
 
 }
 
 header nav ul li ul li a:hover {
-    background: #555; /* 滑鼠懸停時變色 */
+    background: #555;
+    /* 滑鼠懸停時變色 */
     color: #ff6347;
 }
 
 /* 顯示子選單 */
-header nav ul li:hover > ul {
+header nav ul li:hover>ul {
     display: block;
 }
-li.welcome{
-  margin-right:0px;
-  margin-left: 7px;
+
+li.welcome {
+    margin-right: 0px;
+    margin-left: 7px;
 }
-li.name{
-    margin-right:7px;
+
+li.name {
+    margin-right: 7px;
     margin-left: 0px;
 }
-    #hero {
-      height:100%;
-    }
-    #hero {
-    background: url("hero-bg.jpg") no-repeat center center/cover;
+
+#hero {
+    position: relative;
+    /* 加這個讓 ::before 正確覆蓋背景圖 */
+    background: url("../images/herobackground0.63.png") no-repeat center center / cover;
     color: #fff;
     text-align: center;
     padding: 100px 20px;
-    }
-    
-    #hero h1 {
-    color: #333;
+    z-index: 0;
+    /* 確保文字在遮罩上 */
+}
+
+#hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.5));
+    /* 微調更穩定的遮罩 */
+    z-index: -1;
+    /* 放在背景圖上、文字下 */
+}
+
+#hero h1 {
+    color: #fefefe;
+    /* 可改為白色看你想讓字多跳或低調 */
     font-size: 2.5em;
     margin-bottom: 20px;
-    }
-    
-    #hero p {
-    color: #333;
-    font-size: 1.2em;
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+    position: relative;
+    z-index: 1;
+}
+
+#hero p {
+    color: #fefefe;
+    font-size: 1.4em;
     margin-bottom: 30px;
-    }
-    
-    #hero .btn {
+    font-weight: 1000;
+    position: relative;
+    z-index: 1;
+}
+
+#hero .btn {
     display: inline-block;
-    background: #ff6347;
+    background: #F7B27E;
     color: #fff;
     padding: 10px 20px;
     text-decoration: none;
-    border-radius: 5px;
+    border-radius: 8px;
     transition: background 0.3s;
-    
-    }
-    
-    #hero .btn:hover {
-    background: #e55342;
-    }
-    
-    section {
+    position: relative;
+    z-index: 1;
+    font-weight: 600;
+    font-size: 1.1em;
+}
+
+#hero .btn:hover {
+    background: #EFA66A;
+}
+
+section {
     padding: 40px 20px;
     max-width: 1200px;
     margin: 0 auto;
-    }
-    
-    .forms{
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        width: 100%;
-        border-radius: 5px;
-        border: 1px solid #ababab;
-        padding: 5px;
-        color:#244794;
-        text-decoration: none;
-        text-align: center;
-        transition: background 0.5s;
-        font-weight: 400;
-    }
-    .forms:hover {
-        background: #646464;
-        color: white;
-    }
-    
-    h2 {
+}
+
+.forms {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #ababab;
+    padding: 5px;
+    color: #244794;
+    text-decoration: none;
+    text-align: center;
+    transition: background 0.5s;
+    font-weight: 400;
+}
+
+.forms:hover {
+    background: #646464;
+    color: white;
+}
+
+h2 {
     margin-bottom: 20px;
     font-size: 2em;
     color: #333;
-    }
-    
-    .service {
+}
+
+.service {
     background: #f4f4f4;
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    
-    form {
-    
+}
+
+form {
+
     display: flex;
     flex-direction: row;
-    
-    }
-    
-    form label {
+
+}
+
+form label {
     font-weight: bold;
-    }
-    
-    form button {
+}
+
+form button {
     padding: 7px;
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -189,120 +236,201 @@ li.name{
     color: #fff;
     cursor: pointer;
     transition: background 0.3s;
-    
-    }
-    
-    form button:hover {
+
+}
+
+form button:hover {
     background: #ff6347;
-    }
-    
-    footer {
+}
+
+footer {
     background: #333;
     color: #fff;
     text-align: center;
     padding: 10px 20px;
-    margin-top: 40px;
-    }
-    .button-container {
-      display: flex; /* 使用彈性盒子布局 */
-      flex-wrap: wrap; /* 允許按鈕換行 */
-      justify-content: space-around; /* 按鈕均勻分布 */
-      gap: 10px; /* 按鈕之間的間距 */
-      width: 100%; /* 占滿父容器寬度 */
-      padding: 10px; /* 增加內邊距 */
-      box-sizing: border-box; /* 包含內邊距在寬度內 */
-  }
-    .reservation-btn {
-      flex: 0 1 calc(33.333% - 20px); /* 每行最多3個按鈕，間距10px */
-      max-width: 100%; /* 防止按鈕超出容器寬度 */
-      text-align: center; /* 文字置中 */
-      background: #7fa6e5; /* 按鈕背景色 */
-      color: #fff; /* 按鈕文字顏色 */
-      padding: 10px;
-      text-decoration: none;
-      border-radius: 5px;
-      transition: background 0.3s;
-      box-sizing: border-box; /* 包含內邊距在寬度內 */
-  }
-    
-    .reservation-btn:hover {
-    background: #738db7;
-    }
-    /* 對話框的樣式 */
-    dialog {
-        height: 70%;
-        position: fixed; /* 固定位置，確保不隨滾動移動 */
-        transform: translate(0%); /* 精確居中 */
-        border: none; /* 移除預設邊框 */
-        border-radius: 10px; /* 圓角 */
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* 加入陰影 */
-        padding: 20px;
-        width: 400px; /* 固定寬度 */
-        background: #fff; /* 背景色 */
-        z-index: 1000; /* 確保在最上層 */
-        text-align: center;
-        
-    }
-    
-    /* 關閉按鈕的樣式 */
-    dialog button {
-        margin-top: 20px; /* 與內容保持距離 */
-        padding: 10px 20px;
-        background: #ff4a47;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
-    
-    dialog button:hover {
-        background: #e55342;
-    }
-    
-    /* 彈出背景樣式 */
-    dialog::backdrop {
-        background: rgba(0, 0, 0, 0.5); /* 半透明背景 */
-        z-index: 1000; /* 確保置於最上層 */
-    }
-    
-    /* 響應式布局 */
-  @media (max-width: 768px) {
-      .reservation-btn {
-          flex: 0 1 calc(50% - 20px); /* 每行最多顯示2個按鈕 */
-      }
-  }
-  
-  @media (max-width: 480px) {
-      .reservation-btn {
-          flex: 0 1 calc(100% - 20px); /* 每行顯示1個按鈕 */
-      }
-  }
-.loader {
-    border: 8px solid #f3f3f3; /* 淺色背景 */
-    border-top: 8px solid #3498db; /* 加載的主顏色 */
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-    margin: 20px auto;
+    margin-top: 0px;
 }
 
-/* 旋轉動畫 */
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+.button-container {
+    display: flex;
+    /* 使用彈性盒子布局 */
+    flex-wrap: wrap;
+    /* 允許按鈕換行 */
+    justify-content: space-around;
+    /* 按鈕均勻分布 */
+    gap: 10px;
+    /* 按鈕之間的間距 */
+    width: 100%;
+    /* 占滿父容器寬度 */
+    padding: 10px;
+    /* 增加內邊距 */
+    box-sizing: border-box;
+    /* 包含內邊距在寬度內 */
+}
+
+.reservation-btn {
+    flex: 0 1 calc(33.333% - 20px);
+    /* 每行最多3個按鈕，間距10px */
+    max-width: 100%;
+    /* 防止按鈕超出容器寬度 */
+    text-align: center;
+    /* 文字置中 */
+    background: #a8ba96;
+    /* 按鈕背景色 */
+    color: #2F2F2F;
+    /* 按鈕文字顏色 */
+    padding: 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background 0.3s;
+    box-sizing: border-box;
+    /* 包含內邊距在寬度內 */
+    border: none;
+    font-size: 1em;
+}
+
+.reservation-btn:hover {
+    background: #AFC0A1;
+}
+
+.reservation {
+    background-color: #E8E6E1;
+}
+
+/* 對話框的樣式 */
+dialog {
+    height: 70%;
+    position: fixed;
+    /* 固定位置，確保不隨滾動移動 */
+    transform: translate(0%);
+    /* 精確居中 */
+    border: none;
+    /* 移除預設邊框 */
+    border-radius: 10px;
+    /* 圓角 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    /* 加入陰影 */
+    padding: 20px;
+    width: 400px;
+    /* 固定寬度 */
+    background: #fff;
+    /* 背景色 */
+    z-index: 1000;
+    /* 確保在最上層 */
+    text-align: center;
+
+}
+
+/* 關閉按鈕的樣式 */
+dialog button {
+    margin-top: 20px;
+    /* 與內容保持距離 */
+    padding: 10px 20px;
+    background: #ff4a47;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+dialog button:hover {
+    background: #e55342;
+}
+
+/* 彈出背景樣式 */
+dialog::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+    /* 半透明背景 */
+    z-index: 1000;
+    /* 確保置於最上層 */
+}
+
+/* 響應式布局 */
+@media (max-width: 768px) {
+    .reservation-btn {
+        flex: 0 1 calc(50% - 20px);
+        /* 每行最多顯示2個按鈕 */
+    }
+}
+
+@media (max-width: 480px) {
+    .reservation-btn {
+        flex: 0 1 calc(100% - 20px);
+        /* 每行顯示1個按鈕 */
+    }
+}
+
+.bounceball {
+    position: relative;
+    display: inline-block;
+    height: 37px;
+    width: 25px;
+}
+
+.bounceball::before {
+    position: absolute;
+    content: "";
+    display: block;
+    top: 0;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background-color: #156fb5;
+    transform-origin: 50%;
+    animation: bounce 500ms alternate infinite ease;
+}
+
+.loading-text {
+    color: #002542;
+    display: inline-block;
+    margin-left: 15px;
+    font-size: 2em;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50%;
+}
+
+@keyframes bounce {
+    0% {
+        top: 50px;
+        height: 5px;
+        border-radius: 60px 60px 20px 20px;
+        transform: scaleX(2);
+    }
+
+    35% {
+        height: 25px;
+        border-radius: 50%;
+        transform: scaleX(1);
+    }
+
+    100% {
+        top: -10px;
+    }
 }
 
 .time-slot-container {
-    display: flex; /* 使用彈性盒子布局 */
-    justify-content: space-between; /* 子元素之間均勻分布 */
-    align-items: center; /* 垂直方向置中 */
-    width: 100%; /* 占滿父容器寬度 */
-    gap: 10px; /* 按鈕之間的間距 */
-    padding: 0; /* 移除內邊距 */
-    box-sizing: border-box; /* 包含內邊距在寬度內 */
+    display: flex;
+    /* 使用彈性盒子布局 */
+    justify-content: space-between;
+    /* 子元素之間均勻分布 */
+    align-items: center;
+    /* 垂直方向置中 */
+    width: 100%;
+    /* 占滿父容器寬度 */
+    gap: 10px;
+    /* 按鈕之間的間距 */
+    padding: 0;
+    /* 移除內邊距 */
+    box-sizing: border-box;
+    /* 包含內邊距在寬度內 */
 }
+
 .time-slots {
     display: flex;
     flex-wrap: wrap;
@@ -311,31 +439,44 @@ li.name{
 }
 
 .time-slot {
-    flex: 1; /* 讓每個按鈕平分可用空間 */
-    text-align: left; /* 文字置中 */
-    padding: 10px 15px; /* 增加按鈕內邊距 */
-    border-radius: 5px; /* 圓角 */
-    background-color: #ffffff; /* 默認可用狀態為綠色 */
-    color: #269726; /* 文字顏色 */
-    cursor: pointer; /* 滑鼠樣式 */
-    transition: background 0.3s; /* 背景色過渡效果 */
-    border: 2px solid #9c9c9c; /* 按鈕邊框 */
-    box-sizing: border-box; /* 包含內邊距在寬度內 */
+    flex: 1;
+    /* 讓每個按鈕平分可用空間 */
+    text-align: left;
+    /* 文字置中 */
+    padding: 10px 15px;
+    /* 增加按鈕內邊距 */
+    border-radius: 5px;
+    /* 圓角 */
+    background-color: #ffffff;
+    /* 默認可用狀態為綠色 */
+    color: #269726;
+    /* 文字顏色 */
+    cursor: pointer;
+    /* 滑鼠樣式 */
+    transition: background 0.3s;
+    /* 背景色過渡效果 */
+    border: 2px solid #9c9c9c;
+    /* 按鈕邊框 */
+    box-sizing: border-box;
+    /* 包含內邊距在寬度內 */
 }
 
 .time-slot.available {
     background-color: #ffffff;
     color: #276527;
 }
+
 .time-slot.available:hover {
     background-color: #a9a9a9;
 }
+
 .time-slot.occupied {
     background-color: #ffe0e0;
     color: #802b2b;
     cursor: not-allowed;
 }
-.cancel-button{
+
+.cancel-button {
     background-color: #ff6347;
     color: #fff;
     padding: 10px 20px;
@@ -344,29 +485,120 @@ li.name{
     transition: background 0.3s;
     cursor: pointer;
 }
+
 .cancel-button:hover {
     background: #e55342;
 }
-.Post_Image{
+
+.Post_Image {
     width: 66%;
     height: 66%;
     object-fit: cover;
     border-radius: 5px;
 }
-.white-space-pre{
+
+.white-space-pre {
     white-space: pre-line;
+    font-size: 1em;
+    font-weight: 550;
+    color: #CCCCCC;
 }
-.post-link{
+
+.post h2 {
+    color: #fff;
+}
+
+.post-link {
     border-radius: 5px;
     border: 1px solid #7c7c7c;
     padding: 7px 10px;
-    color:#ff6347;
+    background-color: #eadacb;
+    color: #544949;
     text-decoration: none;
     text-align: center;
     transition: background 0.5s;
     font-weight: 400;
 }
+
 .post-link:hover {
-    background: #646464;
-    color: white;
+    background: #FFDAC0;
+    /* color: rgb(217, 217, 217); */
+}
+
+.post {
+    background-color: #544949;
+}
+
+.post hr {
+    border-width: 2px;
+    border-color: #F4E9E1;
+}
+
+.post-title {
+    color: #CCCCCC;
+    font-size: 1.8em;
+    font-weight: 600;
+}
+
+.notations {
+    background-color: #F4F2F0;
+}
+
+.notations h2 {
+    font-size: 2em;
+    color: #544949;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.notations h3 {
+    font-size: 1.2em;
+    margin-top: 30px;
+    color: #695e58;
+    /* 或較深灰棕 */
+    font-weight: 600;
+}
+
+.notations p {
+    padding-left: 20px;
+    line-height: 1.8;
+    color: #333;
+}
+
+.faq-section {
+    background: #F4F2F0;
+    padding: 60px 20px;
+    margin: 0 auto;
+    padding-bottom: 20px;
+}
+
+.faq-section h2 {
+    font-size: 2em;
+    margin-bottom: 30px;
+    color: #544949;
+}
+.faq-section h3 {
+    font-size: 1.2em;
+    margin-top: 30px;
+    color: #695e58;
+    font-weight: 600;
+}
+
+.faq-question::before {
+    content: "❓";
+    margin-right: 8px;
+    color: #7FA6E5;
+}
+
+.faq-question {
+    font-weight: 700;
+    color: #3E3E3E;
+    margin-top: 24px;
+}
+
+.faq-answer {
+    padding-left: 20px;
+    margin-bottom: 24px;
+    color: #4A4A4A;
+    line-height: 1.7;
 }

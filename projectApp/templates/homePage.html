@@ -6,7 +6,7 @@
     <title>Home Page</title>
     
     {% load static %}
-    <link rel="icon" href="{% static 'favicon.ico' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}">
     <link rel="stylesheet" type= "text/css" href="{% static 'css/style_home.css' %}">
 </head>
 <body>
@@ -23,117 +23,60 @@
                     </ul>
                 </li>
                 <li>
-                    <a href="{% url 'Profile' %}?username={{ signed_username }}" data-translate="個人">個人</a>
+                    <a href="{% url 'Profile' %}" data-translate="個人">個人</a>
                 </li>
                 <li class="welcome" data-translate="歡迎">歡迎，</li>
                 <li class="name">{{ username }}</li>
-                <select id="languages">
+                <!-- <select id="languages">
                     <option value="zh">中文</option>
                     <option value="en">English</option>
-                </select>
+                </select> -->
             </ul>
         </nav>
     </header>
   
   <main>
         <section id="hero">
-            <h1 data-translate="歡迎來到琴房預約系統">歡迎來到琴房預約系統</h1>
-            <p data-translate="若您是第一次使用，請閱讀以下注意事項">若您是第一次使用，請閱讀以下注意事項</p>
+            <h1 data-translate="歡迎來到琴房預約系統">歡迎,Welcome</h1>
+            <p data-translate="若您是第一次使用，請閱讀以下注意事項">點擊下方按鈕查看使用說明</p>
             <p></p>
             <a href="#notations" class="btn" data-translate="注意事項">注意事項</a>
             
         </section>
-        <section id="Post">
-            <h2 data-translate="最新 Facebook 貼文">最新 Facebook 貼文</h2>
+        <section id="Post" class="post">
+            <h2 data-translate="最新 Facebook 貼文">最新公告</h2>
+            <div id="announcement" class="announcement"></div>
             <div id="post-content"></div>
         </section>
-        <section id="reservation">
+        <section id="reservation" class="reservation">
             <h2 data-translate="預約系統">預約系統</h2>
-            <a class="forms" href="https://docs.google.com/forms/d/e/1FAIpQLSdTISFXBuiSQR2uGaaW7hdvpbkil4tgoS7zWemwPVtRumdRTQ/viewform?usp=dialog" target="_blank" data-translate="琴房報修">琴房報修</a>
+            <a class="forms" href="https://docs.google.com/forms/d/e/1FAIpQLSdTISFXBuiSQR2uGaaW7hdvpbkil4tgoS7zWemwPVtRumdRTQ/viewform?usp=dialog" target="_blank" data-translate="琴房報修">琴房報修表單</a>
             <dialog id="LoadingDialog">
-                <h2>正在加載...</h2>
-                <div class="loader"></div>
+                <!-- <h3>加載中...</h3> -->
+                <div class="loading">
+                    <div class="bounceball"></div>
+                    <h3 class="loading-text">Loading</h3>
+                </div>
             </dialog>
             <dialog id="myDialog">
-              <p>開發中</p>
               <button onclick="closeDialog()">關閉</button>
             </dialog>
-          <h3 data-translate="大琴房">大琴房</h3>
-          <div class="button-container">
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-          </div>
-          <h3 data-translate="中琴房">中琴房</h3>
-          <div class="button-container">
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-          </div>
-          <h3 data-translate="小琴房">小琴房</h3>
-          <div class="button-container">
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-          </div>
-          <h3 data-translate="社窩">社窩</h3>
-          <div class="button-container">
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-              <a class="reservation-btn" onclick="openDialog()"></a>
-          </div>
+          <div class="All-room-button"></div>
+          
         </section>
 
-        <section id="notations">
-         <h2 data-translate="注意事項">注意事項</h2>
-         <h3 data-translate="關於預約系統">關於預約系統</h3>
-          <p data-translate="1.預約方式為即按即預約。">1.預約方式為即按即預約。</p>
-          <p data-translate="2.每次預約為半個小時">2.每次預約為半個小時</p>
-          <p data-translate="3.每人每周不得預約超過七小時，違規者系統將自動取消。">3.每人每周不得預約超過七小時，違規者系統將自動取消。</p>
-          <p data-translate="4.每周日00:00才會開放當周可預約的時段">4.每周日00:00才會開放當周可預約的時段</p>
-          <p data-translate="5.為達使用琴房效率最大化，預約後若無法到場請記得取消預約">5.為達使用琴房效率最大化，預約後若無法到場請記得取消預約</p>
-         <h3 data-translate="關於琴房">關於琴房</h3>
-          <p data-translate="1.開完琴房後鑰匙請記得掛回社窩，並鎖上門。">1.開完琴房後鑰匙請記得掛回社窩，並鎖上門。</p>
-          <p data-translate="2.離開琴房時請記得關燈、鎖門。">2.離開琴房時請記得關燈、鎖門。</p>
-          <p data-translate="3.有任何問題或建議請聯絡網管。">3.有任何問題或建議請聯絡網管。</p>
+        <section id="notations" class="notations">
         </section>
 
-        <section id="questions">
-            <h2 data-translate="常見問題">常見問題</h2>
-            <h3 data-translate="Q1:如何預約琴房？">Q1:如何預約琴房？</h3>
-              <p data-translate="A1:請至預約系統頁面，選擇您想預約的琴房，選擇您想要的日期，點擊想要的時間即可預約。">A1:請至預約系統頁面，選擇您想預約的琴房，選擇您想要的日期，點擊想要的時間即可預約。</p>
-            <h3 data-translate="Q2:如何取消預約？">Q2:如何取消預約？</h3>
-              <p data-translate="A2:請至預約系統頁面，選擇您預約過的日期，選擇您想取消的預約，點擊取消即可。">A2:請至預約系統頁面，選擇您預約過的日期，選擇您想取消的預約，點擊取消即可。</p>
-            <h3 data-translate="Q3:別人會看的到我的預約嗎？">Q3:別人會看的到我的預約嗎？</h3>
-              <p data-translate="A3:會，為達交流最大化，此新系統特意新增其功能。">A3:會，為達交流最大化，此新系統特意新增其功能。</p>
-            <h3 data-translate="Q4:如何修改密碼？">Q4:如何修改密碼？</h3>
-              <p data-translate="A4:請點擊「個人」，點擊「更改密碼」。">A4:請點擊「個人」，點擊「更改密碼」。</p>
-            <h3 data-translate="Q5:如何查看自己的預約？">Q5:如何查看自己的預約？</h3>
-              <p data-translate="A5:請點擊「個人」即可看見預約歷史">A5:請點擊「個人」即可看見預約歷史</p>
+        <section id="questions" class="faq-section">
         </section>
     </main>
 
     <footer>
-        <p data-translate="中央鋼琴社預約系統">中央鋼琴社預約系統</p>
+        <p id= "System_Name" data-translate="中央鋼琴社預約系統"></p>
     </footer>
     <script>
-        const currentUsername = "{{ username|escapejs }}"; // 確保後端的 `username` 被安全傳遞
+        const currentUsername = "{{ username|escapejs }}";
         const csrfToken = "{{ csrf_token }}"; // 從模板上下文中獲取 CSRF token
     </script>
     <script src="{% static 'js/scroll.js' %}"></script>

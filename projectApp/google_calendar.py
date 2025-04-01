@@ -2,7 +2,7 @@ import json
 import os
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 # 配置 Google Calendar API 憑證
 SCOPES = ['https://www.googleapis.com/auth/calendar']
@@ -19,8 +19,14 @@ service = build('calendar', 'v3', credentials=credentials)
 # 獲取指定日期的事件
 def get_events_for_date(calendar_ids, date):
     events = []
-    time_min = datetime.fromisoformat(date).isoformat() + 'Z'
-    time_max = (datetime.fromisoformat(date) + timedelta(days=1)).isoformat() + 'Z'
+    
+    # 設定台北時區
+    taipei_tz = timezone(timedelta(hours=8))
+
+    # 設定當天時間範圍
+    date_obj = datetime.fromisoformat(date)
+    time_min = datetime(date_obj.year, date_obj.month, date_obj.day, 0, 0, 0, tzinfo=taipei_tz).isoformat()
+    time_max = datetime(date_obj.year, date_obj.month, date_obj.day, 23, 59, 59, tzinfo=taipei_tz).isoformat()
 
     for calendar_id in calendar_ids:
         events_result = service.events().list(
@@ -31,7 +37,7 @@ def get_events_for_date(calendar_ids, date):
             orderBy='startTime'
         ).execute()
         events.extend(events_result.get('items', []))
-    
+
     # 格式化事件
     formatted_events = []
     for event in events:
@@ -42,6 +48,7 @@ def get_events_for_date(calendar_ids, date):
             'start': start,
             'end': end
         })
+    
     return formatted_events
 
 def create_event(date, start_time, user_name, room_type, duration):

@@ -1,0 +1,43 @@
+Starting deploy and cleanup process...
+[1] Deploying App Engine...
+[RUN] gcloud app deploy --quiet
+[STDERR]
+Services to deploy:
+
+descriptor:                  [C:\Users\User\myproject\test_project\app.yaml]
+source:                      [C:\Users\User\myproject\test_project]
+target project:              [skilled-script-448314-j0]
+target service:              [default]
+target version:              [20250401t221235]
+target url:                  [https://skilled-script-448314-j0.de.r.appspot.com]
+target service account:      [skilled-script-448314-j0@appspot.gserviceaccount.com]
+
+
+Beginning deployment of service [default]...
+#============================================================#
+#= Uploading 4 files to Google Cloud Storage                =#
+#============================================================#
+File upload done.
+Updating service [default]...
+........................................................................................................................................................................................................................................................................................................................................................................................................................................done.
+Setting traffic split for service [default]...
+......................................done.
+Deployed service [default] to [https://skilled-script-448314-j0.de.r.appspot.com]
+
+You can stream logs from the command line by running:
+  $ gcloud app logs tail -s default
+
+To view your application in the web browser run:
+  $ gcloud app browse
+[2] Listing images...
+[RUN] gcloud artifacts docker images list asia-east1-docker.pkg.dev/skilled-script-448314-j0/gae-standard
+[STDERR]
+Listing items under project skilled-script-448314-j0, location asia-east1, repository gae-standard.
+
+Listed 0 items.
+No images found or failed to fetch image list.
+[4] Disabling Artifact Registry API...
+[RUN] gcloud services disable artifactregistry.googleapis.com --quiet
+[STDERR]
+Operation "operations/acat.p17-921569073879-f34259b7-ae4e-444e-bfd5-00a7dea1586e" finished successfully.
+Process completed.

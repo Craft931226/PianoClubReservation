@@ -7,43 +7,35 @@
 
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style_Login.css' %}">
-    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
 </head>
-<body>
-    <div class="login-container">
-        <h1>登入</h1>
-        <form action="{% url 'login' %}" method="POST">
+<div class="wrapper">
+	<div class="container">
+		<h1>Welcome</h1>
+		
+		<form action="{% url 'login' %}" method="POST" class="form">
             {% csrf_token %}
-            <div class="form-group">
-                <label for="name">名字</label>
-                <input type="text" id="name" name="name" placeholder="輸入您的使用者名稱" required>
-            </div>
-            <div class="form-group">
-                <label for="password">密碼(第一次登入會是學號)</label>
-                <input type="password" id="student_id" name="student_id" placeholder="輸入您的密碼" required>
-                <span class="toggle-password" onclick="togglePassword()" style="cursor: pointer;">👁️</span>
-            </div>
+			<input type="text" id="name" name="name" placeholder="輸入您的使用者名稱" autocomplete="username" required>
+			<input type="password" id="student_id" name="student_id" placeholder="輸入您的密碼" required>
+            <br>
             {% if error_message %}
             <p style="color:red;">{{ error_message }}<br>有任何問題請聯繫網管。<br>Forget password?<br>Please contact the the network administrator if any issue.</p>
             {% endif %} 
-            <button type="submit" class="login-btn">登入</button>
-        </form>
-    </div>
-    <script>
-        function togglePassword() {
-            let passwordInput = document.getElementById("student_id");
-            let toggleIcon = document.querySelector(".toggle-password");
-
-            if (passwordInput.type === "password") {
-                passwordInput.type = "text";  // 顯示密碼
-                toggleIcon.textContent = "🙈";  // 變成閉眼
-                toggleIcon.style.cursor = "pointer";
-            } else {
-                passwordInput.type = "password";  // 隱藏密碼
-                toggleIcon.textContent = "👁️";  // 變成睜眼
-                toggleIcon.style.cursor = "pointer";
-            }
-        }
-    </script>
-</body>
+			<button type="submit" id="login-button">Login</button>
+		</form>
+	</div>
+	
+	<ul class="bg-bubbles">
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+	</ul>
+</div>
 </html>
