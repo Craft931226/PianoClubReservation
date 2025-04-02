@@ -3,6 +3,8 @@ import json
 from venv import logger
 from zoneinfo import ZoneInfo
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from .tasks import reset_reservation_weekly
 from django.shortcuts import render, redirect
 
 from projectApp.Facebook_posts import get_facebook_posts
@@ -509,12 +511,21 @@ def get_rules(request):
                     announcement_title[int(row[1][2])-1] = row[2]
                 if row[1][:2] == '內文' and announcement_state:
                     announcement_content[int(row[1][2])-1] = row[2]
-    print("公告標題", announcement_title)
-    print("公告內容", announcement_content)
+    # print("公告標題", announcement_title)
+    # print("公告內容", announcement_content)
     return JsonResponse({'Q': Q, 
                          'A': A,
                          'notation': notation, 
                          'announcement_title': announcement_title, 
                          'announcement_content': announcement_content})
 
-    
+@csrf_exempt
+def reset_reservation_view(request):
+    if request.method == 'POST':
+        try:
+            reset_reservation_weekly(request)  # 重置預約次數
+            return JsonResponse({'success': True, 'message': '預約已重置'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
