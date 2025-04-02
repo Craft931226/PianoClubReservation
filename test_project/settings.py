@@ -34,7 +34,9 @@ ALLOWED_HOSTS = ['127.0.0.1',
                  'skilled-script-448314-j0.de.r.appspot.com',
                  'pianoreservation-production.up.railway.app']
 
-
+CSRF_TRUSTED_ORIGINS = [
+    "https://pianoreservation-production.up.railway.app",
+]
 # Application definition
 
 INSTALLED_APPS = [
