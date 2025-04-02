@@ -1,4 +1,5 @@
 import json
+from django.http import HttpResponse
 import requests
 import os
 import logging
@@ -40,6 +41,6 @@ def reset_reservation_weekly(request):
 
     except Exception as e:
         logging.error(f"❌ 重置預約次數時發生錯誤: {e}")
-        return "Error resetting reservation", 500
-    return "Reservation reset successfully", 200
+        return HttpResponse("Error resetting reservation", status=500)
+    return HttpResponse("Reservation reset successfully", status=200)
 
