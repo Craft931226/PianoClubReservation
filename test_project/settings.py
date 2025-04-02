@@ -133,6 +133,7 @@ STATIC_URL = '/static/'
 
 # This production code might break development mode, so we check whether we're in DEBUG mode
 if not DEBUG:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     # Enable the WhiteNoise storage backend, which compresses static files to reduce disk use
@@ -140,12 +141,12 @@ if not DEBUG:
     # STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
-STORAGES = {
-    'staticfiles': {
-        'BACKEND': 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage',
-    },
-    # 其他儲存設定
-}
+# STORAGES = {
+#     'staticfiles': {
+#         'BACKEND': 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage',
+#     },
+#     # 其他儲存設定
+# }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
