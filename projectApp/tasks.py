@@ -4,7 +4,7 @@ import os
 import logging
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
-from google_sheets import read_data, update_data
+from .google_sheets import read_data, update_data
 
 
 def reset_reservation_weekly(request):
