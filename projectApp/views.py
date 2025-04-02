@@ -10,7 +10,7 @@ from django.shortcuts import render, redirect
 from projectApp.Facebook_posts import get_facebook_posts
 
 # from projectApp.google_gmail import send_cancel_email, send_email
-from .google_sheets import GetRoomEmail, cancel_reservation_log, create_reservation_log, get_user_email, read_data, reset_reservation_limits, update_data
+from .google_sheets import GetRoomEmail, cancel_reservation_log, create_reservation_log, get_user_email, read_data, update_data
 from django.core.signing import Signer, BadSignature
 from django.http import JsonResponse
 from .google_calendar import create_event, get_events_for_date, create_event, service
