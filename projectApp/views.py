@@ -4,7 +4,7 @@ from venv import logger
 from zoneinfo import ZoneInfo
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from .tasks import reset_reservation_weekly
+from .tasks import reset_reservation_weekly, update_FB
 from django.shortcuts import render, redirect
 
 from projectApp.Facebook_posts import get_facebook_posts
@@ -525,6 +525,17 @@ def reset_reservation_view(request):
         try:
             reset_reservation_weekly(request)  # 重置預約次數
             return JsonResponse({'success': True, 'message': '預約已重置'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def refresh_fb_token(request):
+    if request.method == 'POST':
+        try:
+            update_FB(request)  # 更新 Facebook token
+            return JsonResponse({'success': True, 'message': 'Facebook token 已更新'})
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
     else:

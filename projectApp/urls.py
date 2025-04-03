@@ -18,4 +18,5 @@ urlpatterns = [
     path('get-time-range/', views.get_time_range, name='get_time_range'),  # 新增獲取時間範圍的視圖
     path('get-rules/', views.get_rules, name='get_rules'),  # 新增獲取規則的視圖
     path('cron/run_reset_reservation_weekly/', views.reset_reservation_weekly, name='run_reset_reservation_weekly'),  # 新增重置預約次數的視圖
+    path('cron/run_refresh_fb_token/', views.refresh_fb_token, name='refresh_fb_token'),  # 新增刷新 Facebook 令牌的視圖
 ]
