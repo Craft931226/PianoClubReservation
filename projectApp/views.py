@@ -523,7 +523,7 @@ def get_rules(request):
 def reset_reservation_view(request):
     if request.method == 'POST':
         try:
-            reset_reservation_weekly(request)  # 重置預約次數
+            reset_reservation_weekly()  # 重置預約次數
             return JsonResponse({'success': True, 'message': '預約已重置'})
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
@@ -534,7 +534,7 @@ def reset_reservation_view(request):
 def refresh_fb_token(request):
     if request.method == 'POST':
         try:
-            update_FB(request)  # 更新 Facebook token
+            update_FB()  # 更新 Facebook token
             return JsonResponse({'success': True, 'message': 'Facebook token 已更新'})
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
