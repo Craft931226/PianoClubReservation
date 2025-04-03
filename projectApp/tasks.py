@@ -8,7 +8,7 @@ from googleapiclient.discovery import build
 from .google_sheets import read_data, update_data
 
 
-def reset_reservation_weekly(request):
+def reset_reservation_weekly():
     logging.basicConfig(level=logging.INFO)
 
     RESERVATION_LIMIT_RANGE = os.getenv("RESERVATION_LIMIT_RANGE")
@@ -25,8 +25,8 @@ def reset_reservation_weekly(request):
                     logging.info(f"reserve_limit: {reserve_limit}")
         data = read_data(RESERVATION_LIMIT_RANGE)
         if not data:
-            print("無法讀取預約上限數據")
-            return
+            logging.error("無法讀取預約上限數據")
+            return False
 
         # 構建新的數據，將 B 欄設置為 0，C~P 欄設置為 "-"
         reset_values = []
@@ -37,14 +37,13 @@ def reset_reservation_weekly(request):
 
         update_data(RESERVATION_LIMIT_RANGE, reset_values)
         logging.info("✅ 預約次數與預約紀錄已重置")
-
+        return True
 
     except Exception as e:
         logging.error(f"❌ 重置預約次數時發生錯誤: {e}")
-        return HttpResponse("Error resetting reservation", status=500)
-    return HttpResponse("Reservation reset successfully", status=200)
-
-def update_FB(request):
+        return False
+    
+def update_FB():
     logging.basicConfig(level=logging.INFO)
 
     try:
@@ -55,7 +54,8 @@ def update_FB(request):
         data = read_data(FBLLT_RANGE)
         # print(data)
         if not data:
-            return HttpResponse("❌ 無法讀取 Facebook token", status=500)
+            logging.error("無法讀取 Facebook token 數據")
+            return False
 
         # 向 Facebook API 取得新的 long-lived token
         fb_app_id = os.getenv("FB_APP_ID")
@@ -73,13 +73,14 @@ def update_FB(request):
         new_token = response.json().get("access_token")
 
         if not new_token:
-            return HttpResponse("❌ 無法獲取新的 Facebook token", status=500)
+            logging.error("無法獲取新的 Facebook token")
+            return False
 
         # 更新試算表中的數據
         update_data(FBLLT_RANGE, [[new_token]])
         logging.info("✅ Facebook token 已更新")
-        return HttpResponse("Facebook token updated successfully", status=200)
+        return True
 
     except Exception as e:
         logging.error(f"❌ 更新 Facebook token 時發生錯誤: {e}")
-        return HttpResponse("Error updating Facebook token", status=500)
+        return False
