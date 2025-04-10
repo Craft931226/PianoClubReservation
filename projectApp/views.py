@@ -16,9 +16,6 @@ from django.http import JsonResponse
 from .google_calendar import create_event, get_events_for_date, create_event, service
 from urllib.parse import quote, unquote
 
-number_sequence = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟', 
- '1️⃣ 1️⃣', '1️⃣ 2️⃣', '1️⃣ 3️⃣', '1️⃣ 4️⃣', '1️⃣ 5️⃣', '1️⃣ 6️⃣', '1️⃣ 7️⃣', '1️⃣ 8️⃣', '1️⃣ 9️⃣', 
- '2️⃣ 0️⃣', '2️⃣ 1️⃣', '2️⃣ 2️⃣', '2️⃣ 3️⃣', '2️⃣ 4️⃣', '2️⃣ 5️⃣', '2️⃣ 6️⃣', '2️⃣ 7️⃣', '2️⃣ 8️⃣', '2️⃣ 9️⃣', '3️⃣ 0️⃣']
 
 signer = Signer()  # 簽名工具
 # 試算表的範圍，包含用戶數據
@@ -540,3 +537,7 @@ def refresh_fb_token(request):
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+@csrf_exempt
+def ping(request):
+    return HttpResponse("pong")

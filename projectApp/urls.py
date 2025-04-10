@@ -19,4 +19,5 @@ urlpatterns = [
     path('get-rules/', views.get_rules, name='get_rules'),  # 新增獲取規則的視圖
     path('cron/run_reset_reservation_weekly/', views.reset_reservation_view, name='run_reset_reservation_weekly'),  # 新增重置預約次數的視圖
     path('cron/run_refresh_fb_token/', views.refresh_fb_token, name='refresh_fb_token'),  # 新增刷新 Facebook 令牌的視圖
+    path('cron/ping/', views.ping, name='ping'),  # 新增 ping 的視圖
 ]

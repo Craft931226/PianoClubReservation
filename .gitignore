@@ -24,3 +24,5 @@ credentials.json
 
 test.py
 app.yaml
+.gcloudignore
+nixpacks.toml
