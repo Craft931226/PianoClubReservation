@@ -4,6 +4,9 @@ from venv import logger
 from zoneinfo import ZoneInfo
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET
+import psutil, os, logging
+logger = logging.getLogger(__name__)
 from .tasks import reset_reservation_weekly, update_FB
 from django.shortcuts import render, redirect
 
@@ -539,5 +542,8 @@ def refresh_fb_token(request):
         return JsonResponse({'error': 'Invalid request method'}, status=405)
     
 @csrf_exempt
+@require_GET
 def ping(request):
+    rss_mb = psutil.Process(os.getpid()).memory_info().rss / (1024*1024)
+    logger.info(f"[PING] rss={rss_mb:.1f}MB")
     return HttpResponse("pong")
