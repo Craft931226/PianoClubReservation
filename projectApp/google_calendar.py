@@ -12,7 +12,7 @@ service = build('calendar', 'v3', credentials=credentials)
 
 # # 本地憑證文件的路徑
 # SCOPES = ['https://www.googleapis.com/auth/calendar']
-# SERVICE_ACCOUNT_FILE = r"C:\Users\User\Downloads\skilled-script-448314-j0-0c05f20ca146.json"
+# SERVICE_ACCOUNT_FILE = r"C:\Users\yanch\Downloads\skilled-script-448314-j0-99fdb0f4b352.json"
 # credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 # service = build('calendar', 'v3', credentials=credentials)
 
