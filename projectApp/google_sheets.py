@@ -15,7 +15,7 @@ service = build('sheets', 'v4', credentials=credentials)
 
 # # 配置 Google Sheets API 憑證(本地端)
 # SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-# SERVICE_ACCOUNT_FILE = r"C:\Users\User\Downloads\skilled-script-448314-j0-0c05f20ca146.json"
+# SERVICE_ACCOUNT_FILE = r"C:\Users\yanch\Downloads\skilled-script-448314-j0-99fdb0f4b352.json"
 # credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 # service = build('sheets', 'v4', credentials=credentials)
 

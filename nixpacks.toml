@@ -1,5 +1,0 @@
-[phases.setup]
-nixpkgsArchive = "23.05"
-
-[variables]
-PYTHON_VERSION = "3.11"

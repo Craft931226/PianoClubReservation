@@ -9,7 +9,6 @@ PAGE_ID = os.getenv("FACEBOOK_PAGE_ID")  # 粉絲專頁 ID
 FIELDS = "message,full_picture,permalink_url"
 SYSTEM_STATE_SHEET = '系統狀態'
 
-PAGE_ID = '176367845765381'
 
 def get_facebook_posts():
     ACCESS_TOKEN = "1" 
