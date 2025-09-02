@@ -5,6 +5,7 @@ from zoneinfo import ZoneInfo
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
+from django.views.decorators.cache import cache_page
 import psutil, os, logging
 logger = logging.getLogger(__name__)
 from .tasks import reset_reservation_weekly, update_FB
@@ -24,8 +25,8 @@ signer = Signer()  # 簽名工具
 # 試算表的範圍，包含用戶數據
 GOOGLE_SHEET_RANGE = '社員資料!A2:C'  # 假設試算表有 Name 和 Student ID 列
 RESERVATION_LIMIT_RANGE = '預約上限!A1:P'  # 假設試算表有 Name 和 Limit 列
-STATUS_RANGE = '系統狀態'
-RULES_RANGE = '規則'
+STATUS_RANGE = '系統狀態!A1:E10'
+RULES_RANGE = '規則!A1:C24'
 
 
 def login_view(request):
@@ -412,7 +413,7 @@ def cancel_calendar_event_by_time(request):
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
 
-
+@cache_page(60)
 def get_latest_post_view(request):
     post = get_facebook_posts()
     # print(post)
@@ -421,6 +422,7 @@ def get_latest_post_view(request):
     else:
         return JsonResponse({'error': '無法獲取最新貼文'}, status=500)
     
+@cache_page(60)
 def get_show_reserve_name(request):
     data = read_data(STATUS_RANGE)
     for row in data:
@@ -428,6 +430,7 @@ def get_show_reserve_name(request):
             if row[0] == 'ShowReserveName':
                 return JsonResponse({'ShowReserveName': row[1]})
 
+@cache_page(60)
 def get_room_type(request):
     # print("call 到")
     data = read_data(STATUS_RANGE)
@@ -444,6 +447,7 @@ def get_room_type(request):
                 # print(room_name)
                 return JsonResponse({'RoomName': room_name})
             
+@cache_page(60)
 def get_system_name(request):
     # print("call")
     data = read_data(STATUS_RANGE)
@@ -453,6 +457,7 @@ def get_system_name(request):
                 # print(row[1])
                 return JsonResponse({'SystemName': row[1]})
             
+@cache_page(60)
 def get_time_range(request):
     data = read_data(STATUS_RANGE)
     for row in data:
@@ -461,8 +466,9 @@ def get_time_range(request):
                 # print(row)
                 return JsonResponse({'starttime': int(row[1]), 'endtime': int(row[2])}) 
 
+@cache_page(60)
 def get_rules(request):
-    data = read_data("規則")
+    data = read_data(RULES_RANGE)
     NumbersOfFAQs = 0
     NumbersOfAnnounce = 0
     for row in data:

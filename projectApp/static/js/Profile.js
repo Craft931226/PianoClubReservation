@@ -1,22 +1,22 @@
-const translation = {
-    "(返回上一頁以回到主頁)" : {en: "(Return to the main page by going back)", zh: "(返回上一頁以回到主頁)"},
-    "個人中心": {en: "Profile", zh: "個人中心"},
-    "姓名": {en: "Name:", zh: "姓名："},
-    "密碼": {en: "Password:", zh: "密碼："},
-    "本週預約次數": {en: "This Week's Reservation Times:", zh: "本週預約次數："},
-    "預約紀錄": {en: "Reservation History", zh: "預約紀錄"},
-    "大琴房": {en: "Large Piano Room", zh: "大琴房"},
-    "中琴房": {en: "Medium Piano Room", zh: "中琴房"},
-    "小琴房": {en: "Small Piano Room", zh: "小琴房"},
-    "社窩": {en: "Club Room", zh: "社窩"},
-    "修改密碼": {en: "Change Password", zh: "修改密碼"},
-    "日期": {en: "Date", zh: "日期"},
-    "時間": {en: "Time", zh: "時間"},
-    "地點": {en: "Location", zh: "地點"},
-    "顯示": {en: "Show", zh: "顯示"},
-    "隱藏": {en: "Hide", zh: "隱藏"},
-    "登出": {en: "Logout", zh: "登出"},
-};
+// const translation = {
+//     "(返回上一頁以回到主頁)" : {en: "(Return to the main page by going back)", zh: "(返回上一頁以回到主頁)"},
+//     "個人中心": {en: "Profile", zh: "個人中心"},
+//     "姓名": {en: "Name:", zh: "姓名："},
+//     "密碼": {en: "Password:", zh: "密碼："},
+//     "本週預約次數": {en: "This Week's Reservation Times:", zh: "本週預約次數："},
+//     "預約紀錄": {en: "Reservation History", zh: "預約紀錄"},
+//     "大琴房": {en: "Large Piano Room", zh: "大琴房"},
+//     "中琴房": {en: "Medium Piano Room", zh: "中琴房"},
+//     "小琴房": {en: "Small Piano Room", zh: "小琴房"},
+//     "社窩": {en: "Club Room", zh: "社窩"},
+//     "修改密碼": {en: "Change Password", zh: "修改密碼"},
+//     "日期": {en: "Date", zh: "日期"},
+//     "時間": {en: "Time", zh: "時間"},
+//     "地點": {en: "Location", zh: "地點"},
+//     "顯示": {en: "Show", zh: "顯示"},
+//     "隱藏": {en: "Hide", zh: "隱藏"},
+//     "登出": {en: "Logout", zh: "登出"},
+// };
 
 // function translatePage() {
 //     const selectedLanguage = document.getElementById('languages').value || 'zh';
