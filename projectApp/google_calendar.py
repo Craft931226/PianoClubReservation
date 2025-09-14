@@ -6,9 +6,9 @@ from datetime import datetime, timedelta, timezone
 
 # 配置 Google Calendar API 憑證
 SCOPES = ['https://www.googleapis.com/auth/calendar']
-credentials_info = json.loads(os.getenv('GOOGLE_CREDENTIALS_JSON'))
-credentials = Credentials.from_service_account_info(credentials_info, scopes=SCOPES)
-service = build('calendar', 'v3', credentials=credentials)
+# credentials_info = json.loads(os.getenv('GOOGLE_CREDENTIALS_JSON'))
+# credentials = Credentials.from_service_account_info(credentials_info, scopes=SCOPES)
+# service = build('calendar', 'v3', credentials=credentials)
 
 # # 本地憑證文件的路徑
 # SCOPES = ['https://www.googleapis.com/auth/calendar']
@@ -16,6 +16,13 @@ service = build('calendar', 'v3', credentials=credentials)
 # credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 # service = build('calendar', 'v3', credentials=credentials)
 
+def _get_service():
+    global service
+    if service is None:
+        creds_info = json.loads(os.getenv("GOOGLE_CREDENTIALS_JSON"))
+        creds = Credentials.from_service_account_info(creds_info, scopes=SCOPES)
+        service = build("calendar", "v3", credentials=creds)
+    return service
 # 獲取指定日期的事件
 def get_events_for_date(calendar_ids, date):
     events = []
@@ -29,7 +36,7 @@ def get_events_for_date(calendar_ids, date):
     time_max = datetime(date_obj.year, date_obj.month, date_obj.day, 23, 59, 59, tzinfo=taipei_tz).isoformat()
 
     for calendar_id in calendar_ids:
-        events_result = service.events().list(
+        events_result = _get_service().events().list(
             calendarId=calendar_id,
             timeMin=time_min,
             timeMax=time_max,
@@ -92,7 +99,7 @@ def create_event(date, start_time, user_name, room_type, duration):
     }
 
     # 創建事件
-    created_event = service.events().insert(calendarId=calendar_id, body=event).execute()
+    created_event = _get_service().events().insert(calendarId=calendar_id, body=event).execute()
     print(f"✅ 事件已創建，連結: {created_event.get('htmlLink')}")
     return created_event
 
