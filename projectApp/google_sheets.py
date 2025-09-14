@@ -12,7 +12,7 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 # credentials = Credentials.from_service_account_info(credentials_info, scopes=SCOPES)
 SPREADSHEET_ID = os.getenv('GOOGLE_SHEET_ID')  # 修改為實際試算表的 ID
 # service = build('sheets', 'v4', credentials=credentials)
-
+_service = None 
 # # 配置 Google Sheets API 憑證(本地端)
 # SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 # SERVICE_ACCOUNT_FILE = r"C:\Users\yanch\Downloads\skilled-script-448314-j0-99fdb0f4b352.json"
