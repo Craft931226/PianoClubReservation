@@ -17,7 +17,7 @@ from projectApp.Facebook_posts import get_facebook_posts
 from .google_sheets import GetRoomEmail, cancel_reservation_log, create_reservation_log, get_user_email, read_data, update_data
 from django.core.signing import Signer, BadSignature
 from django.http import JsonResponse
-from .google_calendar import create_event, get_events_for_date, create_event, service
+from .google_calendar import create_event, get_events_for_date, create_event, _get_service
 from urllib.parse import quote, unquote
 
 
@@ -355,7 +355,7 @@ def cancel_calendar_event_by_time(request):
             # print(f"目標timeMin: {time_min}, 目標timeMax: {time_max}, 👤 使用者: {user_name}")
 
             # 獲取當日所有事件
-            events_result = service.events().list(
+            events_result = _get_service().events().list(
                 calendarId=calendar_id,
                 timeMin=time_min,
                 timeMax=time_max,
@@ -382,7 +382,7 @@ def cancel_calendar_event_by_time(request):
                 return JsonResponse({'success': False, 'error': '未找到符合條件的事件'}, status=404)
 
             # 刪除事件
-            service.events().delete(calendarId=calendar_id, eventId=target_event['id']).execute()
+            _get_service().events().delete(calendarId=calendar_id, eventId=target_event['id']).execute()
 
             # 減少預約次數
             reservation_data = read_data(RESERVATION_LIMIT_RANGE)
