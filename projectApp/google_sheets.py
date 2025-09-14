@@ -8,10 +8,10 @@ from googleapiclient.discovery import build
 # 配置 Google Sheets API 憑證
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 # 從環境變數中加載憑證
-credentials_info = json.loads(os.getenv('GOOGLE_CREDENTIALS_JSON'))
-credentials = Credentials.from_service_account_info(credentials_info, scopes=SCOPES)
+# credentials_info = json.loads(os.getenv('GOOGLE_CREDENTIALS_JSON'))
+# credentials = Credentials.from_service_account_info(credentials_info, scopes=SCOPES)
 SPREADSHEET_ID = os.getenv('GOOGLE_SHEET_ID')  # 修改為實際試算表的 ID
-service = build('sheets', 'v4', credentials=credentials)
+# service = build('sheets', 'v4', credentials=credentials)
 
 # # 配置 Google Sheets API 憑證(本地端)
 # SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -28,11 +28,18 @@ SYSTEM_STATE_SHEET = '系統狀態'
 FORM_RESPONSES_RANGE = f'{FORM_RESPONSES_SHEET}!A1:B'  # 假設第一列為名稱，第二列為學號
 RESERVATION_LIMIT_RANGE = f'{RESERVATION_LIMIT_SHEET}!A1:P'  
 
+def _get_service():
+    global _service
+    if _service is None:
+        creds_info = json.loads(os.getenv("GOOGLE_CREDENTIALS_JSON"))
+        creds = Credentials.from_service_account_info(creds_info, scopes=SCOPES)
+        _service = build("sheets", "v4", credentials=creds)
+    return _service
 # 讀取數據
 def read_data(range_name):
     """從 Google 試算表中讀取數據"""
     try:
-        sheet = service.spreadsheets()
+        sheet = _get_service().spreadsheets()
         result = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=range_name).execute()
         return result.get('values', [])
     except Exception as e:
@@ -42,7 +49,7 @@ def read_data(range_name):
 def update_data(range_name, values):
     """更新 Google 試算表中的數據"""
     try:
-        sheet = service.spreadsheets()
+        sheet = _get_service().spreadsheets()
         body = {'values': values}
         result = sheet.values().update(
             spreadsheetId=SPREADSHEET_ID,
@@ -227,8 +234,3 @@ def GetRoomEmail():
         print(f"Error retrieving email: {e}")
         return None
 
-# 測試讀取數據
-print("這裡確保Sheets能夠成功讀取數據，如果顯示[['姓名', '學號']]代表正常讀取：")
-print(read_data(f'{FORM_RESPONSES_SHEET}!A1:B1'))  # 測試讀取表單回應的前 1 行
-print()
-# print(GetRoomEmail())
