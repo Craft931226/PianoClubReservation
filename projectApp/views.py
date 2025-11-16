@@ -413,7 +413,7 @@ def cancel_calendar_event_by_time(request):
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
 
-@cache_page(60)
+ 
 def get_latest_post_view(request):
     post = get_facebook_posts()
     # print(post)
@@ -422,7 +422,7 @@ def get_latest_post_view(request):
     else:
         return JsonResponse({'error': '無法獲取最新貼文'}, status=500)
     
-@cache_page(60)
+ 
 def get_show_reserve_name(request):
     data = read_data(STATUS_RANGE)
     for row in data:
@@ -430,7 +430,7 @@ def get_show_reserve_name(request):
             if row[0] == 'ShowReserveName':
                 return JsonResponse({'ShowReserveName': row[1]})
 
-@cache_page(60)
+ 
 def get_room_type(request):
     # print("call 到")
     data = read_data(STATUS_RANGE)
@@ -447,7 +447,7 @@ def get_room_type(request):
                 # print(room_name)
                 return JsonResponse({'RoomName': room_name})
             
-@cache_page(60)
+ 
 def get_system_name(request):
     # print("call")
     data = read_data(STATUS_RANGE)
@@ -457,7 +457,7 @@ def get_system_name(request):
                 # print(row[1])
                 return JsonResponse({'SystemName': row[1]})
             
-@cache_page(60)
+ 
 def get_time_range(request):
     data = read_data(STATUS_RANGE)
     for row in data:
@@ -466,7 +466,7 @@ def get_time_range(request):
                 # print(row)
                 return JsonResponse({'starttime': int(row[1]), 'endtime': int(row[2])}) 
 
-@cache_page(60)
+ 
 def get_rules(request):
     data = read_data(RULES_RANGE)
     NumbersOfFAQs = 0

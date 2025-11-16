@@ -3,25 +3,25 @@ import os
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from datetime import datetime, timedelta, timezone
-
+from .google_sheets import DEBUG
 # 配置 Google Calendar API 憑證
 SCOPES = ['https://www.googleapis.com/auth/calendar']
-# credentials_info = json.loads(os.getenv('GOOGLE_CREDENTIALS_JSON'))
-# credentials = Credentials.from_service_account_info(credentials_info, scopes=SCOPES)
-# service = build('calendar', 'v3', credentials=credentials)
+
+
 service = None 
-# # 本地憑證文件的路徑
-# SCOPES = ['https://www.googleapis.com/auth/calendar']
-# SERVICE_ACCOUNT_FILE = r"C:\Users\yanch\Downloads\skilled-script-448314-j0-99fdb0f4b352.json"
-# credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-# service = build('calendar', 'v3', credentials=credentials)
+
 
 def _get_service():
     global service
-    if service is None:
+    if service is not None:
+        return service
+    if DEBUG:
+        SERVICE_ACCOUNT_FILE = r"C:\Users\yanch\Downloads\skilled-script-448314-j0-99fdb0f4b352.json"
+        credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    else:
         creds_info = json.loads(os.getenv("GOOGLE_CREDENTIALS_JSON"))
-        creds = Credentials.from_service_account_info(creds_info, scopes=SCOPES)
-        service = build("calendar", "v3", credentials=creds)
+        credentials = Credentials.from_service_account_info(creds_info, scopes=SCOPES)
+    service = build('calendar', 'v3', credentials=credentials)
     return service
 # 獲取指定日期的事件
 def get_events_for_date(calendar_ids, date):

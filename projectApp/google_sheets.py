@@ -4,20 +4,15 @@ import json
 import os
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
-
+from django.conf import settings
 # 配置 Google Sheets API 憑證
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-# 從環境變數中加載憑證
-# credentials_info = json.loads(os.getenv('GOOGLE_CREDENTIALS_JSON'))
-# credentials = Credentials.from_service_account_info(credentials_info, scopes=SCOPES)
+
 SPREADSHEET_ID = os.getenv('GOOGLE_SHEET_ID')  # 修改為實際試算表的 ID
 # service = build('sheets', 'v4', credentials=credentials)
 _service = None 
-# # 配置 Google Sheets API 憑證(本地端)
-# SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-# SERVICE_ACCOUNT_FILE = r"C:\Users\yanch\Downloads\skilled-script-448314-j0-99fdb0f4b352.json"
-# credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-# service = build('sheets', 'v4', credentials=credentials)
+DEBUG = settings.DEBUG
+print(f"Google Sheets DEBUG mode: {DEBUG}")
 
 
 # update_user_name 函數將用戶名更新到試算表中
@@ -30,10 +25,15 @@ RESERVATION_LIMIT_RANGE = f'{RESERVATION_LIMIT_SHEET}!A1:P'
 
 def _get_service():
     global _service
-    if _service is None:
+    if _service is not None:
+        return _service
+    if DEBUG:
+        SERVICE_ACCOUNT_FILE = r"C:\Users\yanch\Downloads\skilled-script-448314-j0-99fdb0f4b352.json"
+        credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    else:
         creds_info = json.loads(os.getenv("GOOGLE_CREDENTIALS_JSON"))
-        creds = Credentials.from_service_account_info(creds_info, scopes=SCOPES)
-        _service = build("sheets", "v4", credentials=creds)
+        credentials = Credentials.from_service_account_info(creds_info, scopes=SCOPES)
+    _service = build('sheets', 'v4', credentials=credentials)
     return _service
 # 讀取數據
 def read_data(range_name):
